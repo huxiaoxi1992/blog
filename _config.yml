@@ -7,14 +7,14 @@ title: Hexo
 subtitle:
 description:
 keywords:
-author: John Doe
+author: Xiaoxi HU
 language:
 timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
-root: /
+url: https://huxiaoxi1992.github.io/my-blog
+root: /my-blog/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 
@@ -73,12 +73,13 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: mango
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
   repo: git@github.com:huxiaoxi1992/my-blog.git
-  branch: [published] #published
-  message: [message]
+  branch: gh-pages #published
+  message: message
+
