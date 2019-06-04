@@ -79,7 +79,7 @@ theme: mango
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: git@github.com:huxiaoxi1992/my-blog.git
+  repo: https://github.com/huxiaoxi1992/my-blog.git
   branch: gh-pages #published
   message: message
 
