@@ -1,29 +1,23 @@
 language: node_js
 
-node_js: stable
+node_js:
+  - "node"
 
 cache:
   directories:
     - node_modules
-    
+
 install:
   - yarn install
-  
+
 script:
   - hexo g
 
-after_script:
-  - cd ./public
-  - git init
-  - git config user.name "romeo1992"
-  - git config user.email 'romeo1992@163.com'
-  - git add .
-  - git commit -m "Update docs"
-  - git push --force --quiet "https://${REPO_TOKEN}@${GH_REF}" master:gh-pages
-
-branches:
-  only:
-    - master
-env:
- global:
-   - GH_REF: github.com/huxiaoxi1992/my-blog.git
+deploy:
+  provider: pages
+  skip-cleanup: true
+  local-dir: public
+  github-token: $GITHUB_TOKEN
+  keep-history: true
+  on:
+    branch: master
