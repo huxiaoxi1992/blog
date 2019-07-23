@@ -7,9 +7,6 @@ cache:
   directories:
     - node_modules
 
-install:
-  - yarn install
-
 script:
   - hexo g
 
