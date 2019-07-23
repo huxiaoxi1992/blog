@@ -6,8 +6,6 @@ categories:
   - web前端
 ---
 
-# Webpack 基本配置
-
 转载至 [语雀/Webpack 基本配置](https://www.yuque.com/fe9/basic/fnvdeu)
 
 ## 章节简介
