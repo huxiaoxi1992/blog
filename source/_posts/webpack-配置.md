@@ -2,8 +2,7 @@
 title: webpack 配置
 date: 2019-07-23 10:28:54
 tags: 前端开发
-categories:
-  - web前端
+categories: web前端
 ---
 
 转载至 [语雀/Webpack 基本配置](https://www.yuque.com/fe9/basic/fnvdeu)

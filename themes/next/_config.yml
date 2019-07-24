@@ -297,7 +297,7 @@ text_align:
 scroll_to_more: false
 
 # Automatically saving scroll position on each post / page in cookies.
-save_scroll: true
+save_scroll: false
 
 # Automatically excerpt description in homepage as preamble text.
 excerpt_description: true
