@@ -1,5 +1,5 @@
 ---
-title: Mapbox 地图初始化
+title: Mapbox 地图教程
 date: 2019-07-30 16:41:56
 tags:
   - mapbox
