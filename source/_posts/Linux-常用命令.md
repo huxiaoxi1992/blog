@@ -162,6 +162,19 @@ cd ..
 cd /root
 ```
 
+## cd 进入 文件夹
+
+```sh
+# 你当前在 /root目录中，使用这个命令会进入 /root/bash目录，这是相对路径
+cd bash
+# 如果你不在 /root目录中的话，就不能用上面的相对路径了，就需要绝对路径
+cd /root/bash
+# 假设你当前在 /root/bash目录中，使用相对路径，你可以用这个命令进入上一级 /root目录， .. 代表相对路径 上级目录
+cd ..
+# 当然你也可以用绝对路径来进入上一级 /root目录
+cd /root
+```
+
 ## cp 复制或重命名 文件/文件夹
 
 ```sh
@@ -206,7 +219,11 @@ mv log.txt /var/log1.txt
 # 复制当前目录内的 bash文件夹到 /home目录并重命名为 bash2
 mv bash /home/bash2
 # 更多的命令可以用 mv --help 查看。
-rm 删除 文件/文件夹
+```
+
+## rm 删除 文件/文件夹
+
+```sh
 # 删除当前目录下的 log.txt文件
 rm log.txt
 # 删除当前目录下所有.txt后缀的文件
