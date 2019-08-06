@@ -7,7 +7,9 @@ tags:
 categories: mapbox
 ---
 
-# Mapbox 地图初始化
+# Mapbox 地图使用教程
+
+## Mapbox 地图初始化
 
 本文主要针对于使用本地 GeoJSON 数据创建地图服务, 最终目的是使用本地 WebServer 启动静态地图页面, 如果需要使用 Mapbox 线上资源, 请参考 [Mapbox 线上示例](https://docs.mapbox.com/mapbox-gl-js/example/simple-map/)
 
@@ -15,9 +17,7 @@ categories: mapbox
 
 <!-- more -->
 
-<a name="VNUO4"></a>
-
-## 创建 HTML 引入资源
+### 创建 HTML 引入资源
 
 打开编辑器, 创建 `index.html`, 并生成基础 HTML 结构.
 
@@ -37,7 +37,7 @@ categories: mapbox
 </html>
 ```
 
-引入 `mapbox-gl.js` 和  `mapbox-gl.css` 文件, 由于官方的资源库连接速度较慢, 这里使用 `BootCDN` 的 CDN 服务.
+引入 `mapbox-gl.js` 和 `mapbox-gl.css` 文件, 由于官方的资源库连接速度较慢, 这里使用 `BootCDN` 的 CDN 服务.
 
 ```html
 <script src="https://cdn.bootcss.com/mapbox-gl/1.1.0/mapbox-gl.js"></script>
@@ -74,11 +74,9 @@ categories: mapbox
 </html>
 ```
 
-<a name="Ahh1W"></a>
+### 创建地图容器
 
-## 创建地图容器
-
-在 HTML 文件 `body`  标签中间增加
+在 HTML 文件 `body` 标签中间增加
 
 ```html
 <div id="map"></div>
@@ -135,9 +133,7 @@ head 标签里增加 map 的样式表
 </html>
 ```
 
-<a name="Ketdw"></a>
-
-## 地图初始化
+### 地图初始化
 
 当前目录创建 `index.js`, 并在 HTML 文件中引入
 
@@ -206,31 +202,25 @@ const map = new mapboxgl.Map({
 
 使用浏览器打开 index.html, 此时显示为一片蓝色背景的地图
 
-![image.png](https://cdn.nlark.com/yuque/0/2019/png/431358/1564468837023-2edea0a8-eac8-41c9-8727-77a868b27cbe.png#align=left&display=inline&height=1018&name=image.png&originHeight=1018&originWidth=1669&size=42920&status=done&width=1669)
+![image.png](./1564468837023-2edea0a8-eac8-41c9-8727-77a868b27cbe.png)
 
-# Mapbox 地图使用本地 GeoJSON 数据
+## Mapbox 地图使用本地 GeoJSON 数据
 
-<a name="D5okl"></a>
-
-## 下载地图资源
+### 下载地图资源
 
 Mapbox 使用本地数据时, 需要引入
 
-- 地图资源[maps.zip](https://www.yuque.com/attachments/yuque/0/2019/zip/431358/1564469498020-160bd0d6-2f4c-4d87-8a2a-158738bc92e1.zip?_lake_card=%7B%22uid%22%3A%22rc-upload-1564468876676-5%22%2C%22src%22%3A%22https%3A%2F%2Fwww.yuque.com%2Fattachments%2Fyuque%2F0%2F2019%2Fzip%2F431358%2F1564469498020-160bd0d6-2f4c-4d87-8a2a-158738bc92e1.zip%22%2C%22name%22%3A%22maps.zip%22%2C%22size%22%3A129968%2C%22type%22%3A%22application%2Fx-zip-compressed%22%2C%22ext%22%3A%22zip%22%2C%22progress%22%3A%7B%22percent%22%3A0%7D%2C%22status%22%3A%22done%22%2C%22percent%22%3A0%2C%22id%22%3A%22jMeRo%22%2C%22refSrc%22%3A%22https%3A%2F%2Fwww.yuque.com%2Fattachments%2Fyuque%2F0%2F2019%2Fzip%2F431358%2F1564469498020-160bd0d6-2f4c-4d87-8a2a-158738bc92e1.zip%22%2C%22card%22%3A%22file%22%7D).  这里使用大熊猫基地的地图数据作为示例.
+- 地图资源[maps.zip](https://www.yuque.com/attachments/yuque/0/2019/zip/431358/1564469498020-160bd0d6-2f4c-4d87-8a2a-158738bc92e1.zip?_lake_card=%7B%22uid%22%3A%22rc-upload-1564468876676-5%22%2C%22src%22%3A%22https%3A%2F%2Fwww.yuque.com%2Fattachments%2Fyuque%2F0%2F2019%2Fzip%2F431358%2F1564469498020-160bd0d6-2f4c-4d87-8a2a-158738bc92e1.zip%22%2C%22name%22%3A%22maps.zip%22%2C%22size%22%3A129968%2C%22type%22%3A%22application%2Fx-zip-compressed%22%2C%22ext%22%3A%22zip%22%2C%22progress%22%3A%7B%22percent%22%3A0%7D%2C%22status%22%3A%22done%22%2C%22percent%22%3A0%2C%22id%22%3A%22jMeRo%22%2C%22refSrc%22%3A%22https%3A%2F%2Fwww.yuque.com%2Fattachments%2Fyuque%2F0%2F2019%2Fzip%2F431358%2F1564469498020-160bd0d6-2f4c-4d87-8a2a-158738bc92e1.zip%22%2C%22card%22%3A%22file%22%7D). 这里使用大熊猫基地的地图数据作为示例.
 - 英文字体包[font.zip](https://www.yuque.com/attachments/yuque/0/2019/zip/431358/1564469497985-61f9bf45-4ef4-4b71-970e-8dd615ed9c9d.zip?_lake_card=%7B%22uid%22%3A%22rc-upload-1564468876676-4%22%2C%22src%22%3A%22https%3A%2F%2Fwww.yuque.com%2Fattachments%2Fyuque%2F0%2F2019%2Fzip%2F431358%2F1564469497985-61f9bf45-4ef4-4b71-970e-8dd615ed9c9d.zip%22%2C%22name%22%3A%22font.zip%22%2C%22size%22%3A76138%2C%22type%22%3A%22application%2Fx-zip-compressed%22%2C%22ext%22%3A%22zip%22%2C%22progress%22%3A%7B%22percent%22%3A0%7D%2C%22status%22%3A%22done%22%2C%22percent%22%3A0%2C%22id%22%3A%22n8hUb%22%2C%22refSrc%22%3A%22https%3A%2F%2Fwww.yuque.com%2Fattachments%2Fyuque%2F0%2F2019%2Fzip%2F431358%2F1564469497985-61f9bf45-4ef4-4b71-970e-8dd615ed9c9d.zip%22%2C%22card%22%3A%22file%22%7D). 汉字字体可以使用页面字体加载, 英文字体必须通过 glyphs 加载.
 - 地图雪碧图 [sprite.zip](https://www.yuque.com/attachments/yuque/0/2019/zip/431358/1564469498025-6d6ea5d4-7bfb-4f31-b0d3-f5f78d063015.zip?_lake_card=%7B%22uid%22%3A%22rc-upload-1564468876676-6%22%2C%22src%22%3A%22https%3A%2F%2Fwww.yuque.com%2Fattachments%2Fyuque%2F0%2F2019%2Fzip%2F431358%2F1564469498025-6d6ea5d4-7bfb-4f31-b0d3-f5f78d063015.zip%22%2C%22name%22%3A%22sprite.zip%22%2C%22size%22%3A203991%2C%22type%22%3A%22application%2Fx-zip-compressed%22%2C%22ext%22%3A%22zip%22%2C%22progress%22%3A%7B%22percent%22%3A0%7D%2C%22status%22%3A%22done%22%2C%22percent%22%3A0%2C%22id%22%3A%22QztIT%22%2C%22refSrc%22%3A%22https%3A%2F%2Fwww.yuque.com%2Fattachments%2Fyuque%2F0%2F2019%2Fzip%2F431358%2F1564469498025-6d6ea5d4-7bfb-4f31-b0d3-f5f78d063015.zip%22%2C%22card%22%3A%22file%22%7D). 通常是一个项目使用一组雪碧图, 包含原始大小和 2x 的图片与 json 文件.
 
-字体包与雪碧图的生成参考 [Mapbox 字体生成](https://www.yuque.com/huxiaoxi/ppwpsh/smz8xd)  与 [Mapbox 雪碧图制作](https://www.yuque.com/huxiaoxi/ppwpsh/mvclfa)  教程.
+字体包与雪碧图的生成参考 [Mapbox 字体生成](https://www.yuque.com/huxiaoxi/ppwpsh/smz8xd) 与 [Mapbox 雪碧图制作](https://www.yuque.com/huxiaoxi/ppwpsh/mvclfa) 教程.
 
-下载上述文件并解压到前文的根目录下, 此时的目录结构如下, font 目录下为形如 `0-255.pbf`  的多个 pbf 文件.
+下载上述文件并解压到前文的根目录下, 此时的目录结构如下, font 目录下为形如 `0-255.pbf` 的多个 pbf 文件.
 
-![image.png](https://cdn.nlark.com/yuque/0/2019/png/431358/1564469650662-1a2d992f-c88e-4013-a1d4-347e4f199860.png#align=left&display=inline&height=325&name=image.png&originHeight=325&originWidth=198&size=15246&status=done&width=198)
+![image.png](./1564469650662-1a2d992f-c88e-4013-a1d4-347e4f199860.png)
 
-<!-- more -->
-
-<a name="fuksw"></a>
-
-## 下载安装 serve 用于启动本地 WebServer
+### 下载安装 serve 用于启动本地 WebServer
 
 需要安装 [nodejs](https://nodejs.org/zh-cn/).
 
@@ -256,15 +246,13 @@ $ serve
 ###   └───────────────────────────────────────────────┘
 ```
 
-在本地启动了一个 WebServer, 监听  5000 端口, 默认打开当前目录下的 index.html 文件.
+在本地启动了一个 WebServer, 监听 5000 端口, 默认打开当前目录下的 index.html 文件.
 
-在浏览器中打开  [http://localhost:5000](http://localhost:5000), 可以看到与前文相同的页面
+在浏览器中打开 [http://localhost:5000](http://localhost:5000), 可以看到与前文相同的页面
 
-![image.png](https://cdn.nlark.com/yuque/0/2019/png/431358/1564471992521-cac164ef-fed0-4f75-ad78-9f5a0d8af8a7.png#align=left&display=inline&height=805&name=image.png&originHeight=805&originWidth=1097&size=24441&status=done&width=1097)
+![image.png](./1564471992521-cac164ef-fed0-4f75-ad78-9f5a0d8af8a7.png)
 
-<a name="N37gS"></a>
-
-## 增加地图数据源
+### 增加地图数据源
 
 修改 index.js 文件, 修改 sources 的值
 
@@ -327,9 +315,7 @@ const map = new mapboxgl.Map({
 });
 ```
 
-<a name="5p21S"></a>
-
-## 增加地图样式
+### 增加地图样式
 
 加载数据源后, 依然无法看到实际的地图显示, 这是因为还没有添加需要显示的面图层, 修改 layers
 
@@ -436,7 +422,7 @@ const map = new mapboxgl.Map({
 
 刷新页面, 展示结果如下, 此时可以使用鼠标拖动与缩放地图
 
-![image.png](https://cdn.nlark.com/yuque/0/2019/png/431358/1564472657034-2fc2f814-a3ea-4b0d-885d-abd9b9770131.png#align=left&display=inline&height=956&name=image.png&originHeight=956&originWidth=1342&size=248047&status=done&width=1342)
+![image.png](./1564472657034-2fc2f814-a3ea-4b0d-885d-abd9b9770131.png)
 
 此时的 index.js
 
@@ -555,11 +541,9 @@ const map = new mapboxgl.Map({
 });
 ```
 
-# Mapbox 图标文字显示
+## Mapbox 图标文字显示
 
-<a name="RD8vI"></a>
-
-## 增加图标与文字
+### 增加图标与文字
 
 layers 增加道路文字图层与图标文字层
 
@@ -612,15 +596,13 @@ layers 增加道路文字图层与图标文字层
 })
 ```
 
-<!-- more -->
+此时刷新页面, 会提示出错
 
-此时刷新页面, 会提示出错<br />![image.png](https://cdn.nlark.com/yuque/0/2019/png/431358/1564474414825-175e6556-5454-4793-aa68-bd29b55360da.png#align=left&display=inline&height=184&name=image.png&originHeight=184&originWidth=560&size=22705&status=done&width=560)
+![image.png](./1564474414825-175e6556-5454-4793-aa68-bd29b55360da.png)
 
-<a name="0OwUV"></a>
+### 增加 glyphs 与 sprite 路径
 
-## 增加  glyphs 与  sprite 路径
-
-需要指定样式使用的字体包路径, 在 style 中添加属性  glyphs
+需要指定样式使用的字体包路径, 在 style 中添加属性 glyphs
 
 ```json
 {
@@ -629,7 +611,9 @@ layers 增加道路文字图层与图标文字层
 }
 ```
 
-![image.png](https://cdn.nlark.com/yuque/0/2019/png/431358/1564474489428-cf614528-aa6a-4956-bd62-9bf5e222d4c0.png#align=left&display=inline&height=1014&name=image.png&originHeight=1014&originWidth=1601&size=421014&status=done&width=1601)<br />可以看到文字已经加入地图上, 但图标还未显示成功, 使用相同的方法, 在 style 中增加属性  sprite
+![image.png](./1564474489428-cf614528-aa6a-4956-bd62-9bf5e222d4c0.png)
+
+可以看到文字已经加入地图上, 但图标还未显示成功, 使用相同的方法, 在 style 中增加属性 sprite
 
 ```json
 {
@@ -638,11 +622,11 @@ layers 增加道路文字图层与图标文字层
 }
 ```
 
-<a name="CrnCs"></a>
+### 解决图标路径 BUG
 
-## 解决图标路径 BUG
+刷新页面, 无法加载地图, 报错 `Unable to parse URL object`
 
-刷新页面, 无法加载地图, 报错   `Unable to parse URL object`<br />![image.png](https://cdn.nlark.com/yuque/0/2019/png/431358/1564474650796-f3a4f188-06f1-4724-8cf7-84653246d200.png#align=left&display=inline&height=108&name=image.png&originHeight=108&originWidth=556&size=12333&status=done&width=556)
+![image.png](./1564474650796-f3a4f188-06f1-4724-8cf7-84653246d200.png)
 
 Mapbox 无法解析相对路径下的 sprite 路径, 需要修改 sprite 属性, 使用当前页面路径进行填充.
 
@@ -667,7 +651,9 @@ const locationURL =
   }
 ```
 
-此时的地图展示如下<br />![image.png](https://cdn.nlark.com/yuque/0/2019/png/431358/1564474853992-0105e276-e295-49be-aab9-57c4c0a97ff6.png#align=left&display=inline&height=906&name=image.png&originHeight=906&originWidth=1319&size=305802&status=done&width=1319)
+此时的地图展示如下
+
+![image.png](./1564474853992-0105e276-e295-49be-aab9-57c4c0a97ff6.png)
 
 完整 index.js 文件如下
 
