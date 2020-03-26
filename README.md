@@ -1,8 +1,6 @@
-[![Build Status](https://travis-ci.org/huxiaoxi1992/blog.svg?branch=master)](https://travis-ci.org/huxiaoxi1992/blog)
-
 # 我的博客
 
-https://huxiaoxi1992.github.io/blog/
+https://blissful-bell-1001df.netlify.com/
 
 博客框架: [Hexo](https://hexo.io/docs/index.html)
 博客模板: [NexT](https://theme-next.iissnan.com/theme-settings.html)
