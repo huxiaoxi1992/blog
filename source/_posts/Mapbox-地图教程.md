@@ -13,9 +13,9 @@ categories: mapbox
 
 本文主要针对于使用本地 GeoJSON 数据创建地图服务, 最终目的是使用本地 WebServer 启动静态地图页面, 如果需要使用 Mapbox 线上资源, 请参考 [Mapbox 线上示例](https://docs.mapbox.com/mapbox-gl-js/example/simple-map/)
 
-完整示例 [mapbox-sample.zip](./mapbox-sample.zip)
-
 <!-- more -->
+
+完整示例 [mapbox-sample.zip](./mapbox-sample.zip)
 
 ### 创建 HTML 引入资源
 
@@ -194,11 +194,11 @@ const map = new mapboxgl.Map({
         type: "background",
         paint: {
           // 背景颜色
-          "background-color": "#75cff0"
-        }
-      }
-    ]
-  }
+          "background-color": "#75cff0",
+        },
+      },
+    ],
+  },
 });
 ```
 
@@ -565,18 +565,18 @@ const map = new mapboxgl.Map({
       // 图标数据
       label: {
         type: "geojson",
-        data: "./maps/label.geojson"
+        data: "./maps/label.geojson",
       },
       // 面数据
       polygon: {
         type: "geojson",
-        data: "./maps/polygon.geojson"
+        data: "./maps/polygon.geojson",
       },
       // 线数据
       line: {
         type: "geojson",
-        data: "./maps/line.geojson"
-      }
+        data: "./maps/line.geojson",
+      },
     },
     // 图层定义
     layers: [
@@ -586,8 +586,8 @@ const map = new mapboxgl.Map({
         type: "background",
         paint: {
           // 背景颜色
-          "background-color": "#75cff0"
-        }
+          "background-color": "#75cff0",
+        },
       },
       // 填充层
       {
@@ -604,7 +604,7 @@ const map = new mapboxgl.Map({
           "green_middle",
           "river",
           "highway",
-          "road"
+          "road",
         ],
         paint: {
           // 填充颜色
@@ -629,7 +629,7 @@ const map = new mapboxgl.Map({
             "road",
             "#FFFDF0",
             // 默认值
-            "#000000"
+            "#000000",
           ],
           // 填充轮廓颜色
           "fill-outline-color": [
@@ -651,9 +651,9 @@ const map = new mapboxgl.Map({
             "#ffffff",
             "road",
             "#FFFDF0",
-            "#000000"
-          ]
-        }
+            "#000000",
+          ],
+        },
       },
       // 道路文字
       {
@@ -666,13 +666,13 @@ const map = new mapboxgl.Map({
           "symbol-placement": "line",
           "text-field": "{label}",
           "text-font": ["font"],
-          "text-size": ["match", ["get", "type"], "highway", 16, 18]
+          "text-size": ["match", ["get", "type"], "highway", 16, 18],
         },
         paint: {
           "text-color": "#415A59",
           "text-halo-color": "#fff",
-          "text-halo-width": 0.5
-        }
+          "text-halo-width": 0.5,
+        },
       },
       // 图标与文字
       {
@@ -686,15 +686,15 @@ const map = new mapboxgl.Map({
           "text-font": ["font"],
           "text-size": 12,
           "text-offset": [0, 1],
-          "text-anchor": "top"
+          "text-anchor": "top",
         },
         paint: {
           "text-color": "#415A59",
           "text-halo-color": "#fff",
-          "text-halo-width": 0.5
-        }
-      }
-    ]
-  }
+          "text-halo-width": 0.5,
+        },
+      },
+    ],
+  },
 });
 ```
