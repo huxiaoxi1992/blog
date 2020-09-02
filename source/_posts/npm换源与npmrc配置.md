@@ -21,6 +21,8 @@ npm config set registry http://registry.npm.taobao.org/
 npm config set registry https://registry.npmjs.org/
 ```
 
+在设置 registry 后运行 npm i -g mirror-config-china 安装镜像配置
+
 ## .npmrc 配置
 
 可以通过修改 `~/.npmrc` 文件指定 npm 源与相关包的镜像, 常用配置如下
