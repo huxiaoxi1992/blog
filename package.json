@@ -2,6 +2,9 @@
   "name": "hexo-site",
   "version": "0.0.0",
   "private": true,
+  "scripts": {
+    "start": "hexo s"
+  },
   "hexo": {
     "version": "5.1.1"
   },
