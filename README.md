@@ -1,3 +1,4 @@
+[![deploy](https://github.com/huxiaoxi1992/blog/actions/workflows/deploy.yml/badge.svg)](https://github.com/huxiaoxi1992/blog/actions/workflows/deploy.yml)
 # 我的博客
 
 https://huxiaoxi1992.github.io/blog/
