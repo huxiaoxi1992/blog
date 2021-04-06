@@ -78,6 +78,6 @@ theme: next
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://github.com/huxiaoxi1992/blog.git
+  repo: git@github.com:huxiaoxi1992/blog.git
   branch: gh-pages #published
   message: message
