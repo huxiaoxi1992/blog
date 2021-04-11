@@ -47,20 +47,23 @@ categories: webGIS
 ## 常用的 TMS_URL
 
 1. 2gis_map: `http://tile2.maps.2gis.com/tiles?x={x}&y={y}&z={z}&v=1.1`
-2. Bingmap: `http://ecn.dynamic.t0.tiles.virtualearth.net/comp/CompositionHandler/{q}?mkt=en-us&it=G,VE,BX,L,LA&shading=hill`
-3. Bing_sat: `http://ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=0&dir=dir_n`
-4. cartdb_positron: `http://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png`
-5. ESRI_national_geographic: `http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}`
-6. ESRI_sat: `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}`
-7. ESRI_standard: `https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}`
-8. google_CN: `http://mt2.google.cn/vt/lyrs=m@177000000&hl=zh-CN&gl=cn&src=app&x={x}&y={y}&z={z}`
-9. google_road: `https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}`
-10. google_sat_us: `https://mt1.google.com/vt/lyrs=s@110&x={x}&y={y}&z={z}`
-11. google_sat: `http://mt3.google.cn/vt/lyrs=s@110&hl=zh-CN&gl=cn&src=app&x={x}&y={y}&z={z}`
-12. landsat: `http://irs.gis-lab.info/?layers=landsat&request=GetTile&z={z}&x={x}&y={y}`
-13. OSM: `http://c.tile.openstreetmap.org/{z}/{x}/{y}.png`
-14. google_terrain: `http://mt0.google.com/vt/lyrs=t@130,r@203000000&hl=en&x={x}&y={y}&z={z}&s=Ga`
-15. 高德地图: `http://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}`
+1. Bingmap: `http://ecn.dynamic.t0.tiles.virtualearth.net/comp/CompositionHandler/{q}?mkt=en-us&it=G,VE,BX,L,LA&shading=hill`
+1. Bing_sat: `http://ecn.t3.tiles.virtualearth.net/tiles/a{q}.jpeg?g=0&dir=dir_n`
+1. cartdb_positron: `http://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png`
+1. ESRI_national_geographic: `http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}`
+1. ESRI_sat: `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}`
+1. ESRI_standard: `https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}`
+1. google_CN: `http://mt2.google.cn/vt/lyrs=m@177000000&hl=zh-CN&gl=cn&src=app&x={x}&y={y}&z={z}`
+1. google_road: `https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}`
+1. google_sat_us: `https://mt1.google.com/vt/lyrs=s@110&x={x}&y={y}&z={z}`
+1. google_sat: `http://mt3.google.cn/vt/lyrs=s@110&hl=zh-CN&gl=cn&src=app&x={x}&y={y}&z={z}`
+1. landsat: `http://irs.gis-lab.info/?layers=landsat&request=GetTile&z={z}&x={x}&y={y}`
+1. OSM: `http://c.tile.openstreetmap.org/{z}/{x}/{y}.png`
+1. google_terrain: `http://mt0.google.com/vt/lyrs=t@130,r@203000000&hl=en&x={x}&y={y}&z={z}&s=Ga`
+1. 高德地图: `http://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}`
+1. 高德卫星: `http://webst04.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}`
+1. 腾讯地图: `http://rt1.map.gtimg.com/realtimerender?z={z}&x={x}&y={y}&type=vector&style=0`
+1. [geoq](http://map.geoq.cn/): `http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetWarm/MapServer/tile/{z}/{y}/{x}`
 
 ## 谷歌地址配置说明
 
