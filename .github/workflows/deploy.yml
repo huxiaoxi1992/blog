@@ -29,4 +29,5 @@ jobs:
         env:
           SERVER_PATH: ${{ secrets.SERVER_PATH }}
         run: |
+          hexo clean && hexo g
           scp -o StrictHostKeyChecking=no -r public/ $SERVER_PATH
