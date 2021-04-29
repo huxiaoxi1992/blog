@@ -2,8 +2,8 @@
 title: GeoJSON格式说明
 date: 2021-04-08 14:54:26
 tags:
-  - webGIS
-categories: webGIS
+  - GIS
+categories: GIS
 ---
 
 ## 简介

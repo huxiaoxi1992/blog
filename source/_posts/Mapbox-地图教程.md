@@ -3,8 +3,8 @@ title: Mapbox 地图教程
 date: 2019-07-30 16:41:56
 tags:
   - mapbox
-  - webGIS
-categories: mapbox
+  - GIS
+categories: GIS
 ---
 
 # Mapbox 地图使用教程

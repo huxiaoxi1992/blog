@@ -3,8 +3,8 @@ title: 瓦片地图与TMS服务
 date: 2019-09-03 11:40:35
 tags:
   - TMS
-  - webGIS
-categories: webGIS
+  - GIS
+categories: GIS
 ---
 
 ## 瓦片切片方式

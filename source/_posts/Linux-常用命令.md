@@ -2,7 +2,7 @@
 title: Linux 常用命令
 date: 2019-07-25 13:12:29
 tags: linux
-categories: linux
+categories: 基础开发
 ---
 
 # 包管理器

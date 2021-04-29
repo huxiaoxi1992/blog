@@ -4,7 +4,7 @@ date: 2020-03-30 18:12:41
 tags:
   - npm
   - 前端开发
-categories: web前端
+categories: 前端开发
 ---
 
 ## npm 换源

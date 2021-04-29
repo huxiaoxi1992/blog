@@ -2,7 +2,7 @@
 title: webpack 配置
 date: 2019-07-23 10:28:54
 tags: 前端开发
-categories: web前端
+categories: 前端开发
 ---
 
 转载至 [语雀/Webpack 基本配置](https://www.yuque.com/fe9/basic/fnvdeu)
@@ -47,7 +47,7 @@ categories: web前端
 
 ```js
 module.exports = {
-  entry: "./index.js"
+  entry: "./index.js",
 };
 ```
 
@@ -57,8 +57,8 @@ module.exports = {
 module.exports = {
   entry: {
     pageA: "./pageA.js",
-    pageB: "./pageB.js"
-  }
+    pageB: "./pageB.js",
+  },
 };
 ```
 
@@ -66,14 +66,14 @@ entry 也可以为数组，如：
 
 ```js
 module.exports = {
-  entry: ["./fileA.js", "./fileB.js"]
+  entry: ["./fileA.js", "./fileB.js"],
 };
 
 // 也可以这样：
 module.exports = {
   entry: {
-    main: ["./fileA.js", "./fileB.js"]
-  }
+    main: ["./fileA.js", "./fileB.js"],
+  },
 };
 ```
 
@@ -87,8 +87,8 @@ module.exports = {
 module.exports = {
   output: {
     filename: "output.js", // 文件名
-    path: __dirname + "/dist" // 文件输出路径，必须为系统绝对路径
-  }
+    path: __dirname + "/dist", // 文件输出路径，必须为系统绝对路径
+  },
 };
 ```
 
@@ -98,12 +98,12 @@ module.exports = {
 module.exports = {
   entry: {
     pageA: "./a.js",
-    pageB: "./b.js"
+    pageB: "./b.js",
   },
   output: {
     filename: "[name].js",
-    path: __dirname + "/dist"
-  }
+    path: __dirname + "/dist",
+  },
 };
 ```
 
@@ -125,14 +125,14 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = {
   entry: {
     pageA: "./a.js",
-    pageB: "./b.js"
+    pageB: "./b.js",
   },
   output: {
     filename: "[name].js",
     path: __dirname + "/dist",
-    publicPath: "https://cdn.antfin.com"
+    publicPath: "https://cdn.antfin.com",
   },
-  plugins: [new HtmlWebpackPlugin()]
+  plugins: [new HtmlWebpackPlugin()],
 };
 ```
 
@@ -175,10 +175,10 @@ module.exports = {
     rules: [
       {
         test: /\.(js)\$/,
-        use: "babel-loader"
-      }
-    ]
-  }
+        use: "babel-loader",
+      },
+    ],
+  },
 };
 ```
 
@@ -252,11 +252,11 @@ module.exports = {
   //...
   module: {
     noParse: /jquery/, // 可以为正则
-    noParse: function(content) {
+    noParse: function (content) {
       // 亦可以为函数
       return /jquery/.test(content);
-    }
-  }
+    },
+  },
 };
 ```
 
@@ -378,22 +378,22 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 module.exports = {
   entry: {
     pageA: "./a.js",
-    pageB: "./b.js"
+    pageB: "./b.js",
   },
   output: {
     filename: "[name].js",
-    path: __dirname + "/dist"
+    path: __dirname + "/dist",
   },
   plugins: [
     new HtmlWebpackPlugin({
       filename: "pageA.html",
-      chunks: ["pageA"]
+      chunks: ["pageA"],
     }),
     new HtmlWebpackPlugin({
       filename: "pageB.html",
-      chunks: ["pageB"]
-    })
-  ]
+      chunks: ["pageB"],
+    }),
+  ],
 };
 ```
 
@@ -495,8 +495,8 @@ HMR 在上文中有多次提到，webpack 官网中的介绍也非常清晰：
 module.exports = {
   //...
   devServer: {
-    contentBase: path.join(__dirname, "dist")
-  }
+    contentBase: path.join(__dirname, "dist"),
+  },
 };
 ```
 
@@ -568,11 +568,11 @@ module.exports = {
       new UglifyJsPlugin({
         cache: true,
         parallel: true, // 多进程压缩
-        sourceMap: true
+        sourceMap: true,
       }),
-      new OptimizeCSSAssetsPlugin({}) // 优化压缩 css
-    ]
-  }
+      new OptimizeCSSAssetsPlugin({}), // 优化压缩 css
+    ],
+  },
 };
 ```
 
