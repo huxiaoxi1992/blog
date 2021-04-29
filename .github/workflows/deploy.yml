@@ -18,17 +18,15 @@ jobs:
           version: ${{ matrix.node_version }}
       - name: Setup hexo
         env:
-          ACTION_DEPLOY_KEY: ${{ secrets.HEXO_DEPLOY_PRI }}
+          ACTION_DEPLOY_KEY: ${{ secrets.HEXO_SERVER_PRI_KEY }}
         run: |
           mkdir -p ~/.ssh/
           echo "$ACTION_DEPLOY_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          git config --global user.email "romeo1992@163.com"
-          git config --global user.name "XiaoxiHU"
           npm install hexo-cli -g
           npm install
       - name: Hexo deploy
+        env:
+          SERVER_PATH: ${{ secrets.SERVER_PATH }}
         run: |
-          hexo clean
-          hexo deploy
+          scp -o StrictHostKeyChecking=no -r public/ $SERVER_PATH
