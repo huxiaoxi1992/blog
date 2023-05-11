@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.ptlab.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Gitea 是一个开源的代码托管平台, 具有占用内存小, 运行速度快等优点, 通常用于代码版本管理以及问题反馈, 个人版本通常使用 Gitea 用作代码仓库.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git 使用规范">
+<meta property="og:url" content="https://blog.ptlab.top/2021/04/29/Git-%E4%BD%BF%E7%94%A8%E8%A7%84%E8%8C%83/index.html">
+<meta property="og:site_name" content="胡晓曦的博客">
+<meta property="og:description" content="Gitea 是一个开源的代码托管平台, 具有占用内存小, 运行速度快等优点, 通常用于代码版本管理以及问题反馈, 个人版本通常使用 Gitea 用作代码仓库.">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-04-29T07:18:36.000Z">
+<meta property="article:modified_time" content="2023-05-11T07:33:34.079Z">
+<meta property="article:author" content="Xiaoxi HU">
+<meta property="article:tag" content="Git">
+<meta property="article:tag" content="基础开发">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.ptlab.top/2021/04/29/Git-%E4%BD%BF%E7%94%A8%E8%A7%84%E8%8C%83/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.ptlab.top/2021/04/29/Git-%E4%BD%BF%E7%94%A8%E8%A7%84%E8%8C%83/","path":"2021/04/29/Git-使用规范/","title":"Git 使用规范"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Git 使用规范 | 胡晓曦的博客</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">胡晓曦的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">个人开发文档</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fas fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fas fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%A6%E6%88%B7%E7%AE%A1%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">账户管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B0%E5%BB%BA%E8%B4%A6%E6%88%B7"><span class="nav-number">1.1.</span> <span class="nav-text">新建账户</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B4%A6%E6%88%B7%E9%85%8D%E7%BD%AE"><span class="nav-number">1.2.</span> <span class="nav-text">账户配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%BB%BA%E4%BB%A3%E7%A0%81%E4%BB%93%E5%BA%93"><span class="nav-number">2.</span> <span class="nav-text">新建代码仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E4%BB%A3%E7%A0%81%E4%BB%93%E5%BA%93%E4%B8%8B%E8%BD%BD"><span class="nav-number">3.</span> <span class="nav-text">本地代码仓库下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%88%86%E6%94%AF%E6%8F%90%E4%BA%A4-x2F-%E5%90%88%E5%B9%B6"><span class="nav-number">4.</span> <span class="nav-text">代码分支提交&#x2F;合并</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%90%88%E5%B9%B6"><span class="nav-number">5.</span> <span class="nav-text">代码合并</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Xiaoxi HU"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Xiaoxi HU</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/huxiaoxi1992" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;huxiaoxi1992" rel="noopener me" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.ptlab.top/2021/04/29/Git-%E4%BD%BF%E7%94%A8%E8%A7%84%E8%8C%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Xiaoxi HU">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="胡晓曦的博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Git 使用规范 | 胡晓曦的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Git 使用规范
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-04-29 15:18:36" itemprop="dateCreated datePublished" datetime="2021-04-29T15:18:36+08:00">2021-04-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-05-11 15:33:34" itemprop="dateModified" datetime="2023-05-11T15:33:34+08:00">2023-05-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">基础开发</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>Gitea 是一个开源的代码托管平台, 具有占用内存小, 运行速度快等优点, 通常用于代码版本管理以及问题反馈, 个人版本通常使用 Gitea 用作代码仓库.</p>
+<span id="more"></span>
+
+<h2 id="账户管理"><a href="#账户管理" class="headerlink" title="账户管理"></a>账户管理</h2><h3 id="新建账户"><a href="#新建账户" class="headerlink" title="新建账户"></a>新建账户</h3><ul>
+<li>Gitea 账号需要管理员在<code>管理后台</code>新建, 暂不提供注册功能</li>
+<li>新增的 Gitea 账号需要管理员拉入团队中</li>
+</ul>
+<h3 id="账户配置"><a href="#账户配置" class="headerlink" title="账户配置"></a>账户配置</h3><ol>
+<li>个人用户登录 Gitea 账号后, 在用户设置中修改个人头像, 以便于项目组成员区分. 账号使用<code>名字拼音</code></li>
+<li>生成 ssh <a href="/2019/06/11/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%E9%85%8D%E7%BD%AE%E8%A7%84%E8%8C%83/" title="前端开发配置规范">前端开发配置规范</a></li>
+</ol>
+<h2 id="新建代码仓库"><a href="#新建代码仓库" class="headerlink" title="新建代码仓库"></a>新建代码仓库</h2><ol>
+<li>非管理员无法在项目组中新建项目, 代码仓库的新建<strong>需要</strong>通过管理员完成</li>
+<li>仓库目录<strong>必须</strong>包括 <code>.gitignore</code> 文件对代码提交与否进行管理, <strong>严禁</strong>提交如 <code>target/</code>, <code>dist/</code> 等输出目录与 <code>node_modules/</code> 等资源目录, 静态资源目录不做限制</li>
+<li>项目<strong>必须</strong>包括 <code>README.md</code> 文件对当前项目进行说明, 包括<ul>
+<li>项目的简介</li>
+<li>项目的安装与使用方法</li>
+<li>项目特殊问题的处理与解决方案</li>
+<li>文件夹目录结构</li>
+<li>使用的接口列表</li>
+</ul>
+</li>
+<li>分支初始化后<strong>需要</strong>完成一次初始化提交以保证代码历史记录的显示</li>
+</ol>
+<h2 id="本地代码仓库下载"><a href="#本地代码仓库下载" class="headerlink" title="本地代码仓库下载"></a>本地代码仓库下载</h2><ol>
+<li><strong>推荐</strong>通过 <code>git clone</code> 新建本地代码目录</li>
+<li><strong>可以</strong>通过本地创建目录后使用 <code>git pull --allow-unrelated-histories</code> 拉取线上仓库并处理冲突后提交, <strong>严禁</strong>提交无历史记录追溯的代码</li>
+</ol>
+<h2 id="代码分支提交-x2F-合并"><a href="#代码分支提交-x2F-合并" class="headerlink" title="代码分支提交&#x2F;合并"></a>代码分支提交&#x2F;合并</h2><ol>
+<li><strong>严禁</strong>使用 <code>git push -f</code> 强制提交代码</li>
+<li>项目无法直接提交到 <code>master</code> 分支, 需通过新建分支, 提交 <code>merge/pull request</code> 完成代码合并</li>
+<li>代码合并上游分支(如 develop 等基础开发分支)时<strong>推荐</strong>使用 <code>merge[拉取]</code> 方法, 在不熟悉的情况下<strong>严禁</strong> <code>rebase[拉取(变基)]</code> 上游分支</li>
+<li>git 提交时<strong>需要</strong>包含每次修改的具体内容, 遵守适量多次的原则, <strong>严禁</strong>一次提交大量更新, 通常单次提交的修改内容不超过 100 行</li>
+<li>git 日志提交参考<a target="_blank" rel="noopener" href="https://gist.githubusercontent.com/jmaxhu/8e7fb69a7dcec1b9b953/raw/ce7dd000639c2483d88def71bc47661fb36a7d4d/.git-commit-template.txt">日志提交模板</a>, 最基础的格式为 <code>&#123;版本号&#125;, &#123;类型&#125;:&#123;主题&#125;</code></li>
+</ol>
+<p>长的开发分支<strong>严禁</strong> <code>rebase[拉取(变基)]</code> 上游分支, 这个会带来大量冲突.</p>
+<p><strong>推荐</strong>每次开发一个功能时新建一个分支, 命名形如<code>feat-&#123;功能点&#125;</code>, 使用 <code>rebase[拉取(变基)]</code> 完成上游分支的本地合并, 完成功能开发后<strong>必须</strong>删除当前开发分支</p>
+<h2 id="代码合并"><a href="#代码合并" class="headerlink" title="代码合并"></a>代码合并</h2><ol>
+<li>发起 <code>merge/pull request</code> 时确认人选择为管理员, 审核人设置为其他开发者与测试</li>
+<li>代码合并的评审需要审核人确保代码库的<code>整体质量的提升为基础原则</code></li>
+<li>代码合并请求会自动向钉钉群组推送通知, 请注意查收并及时处理.</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Git/" rel="tag"># Git</a>
+              <a href="/tags/%E5%9F%BA%E7%A1%80%E5%BC%80%E5%8F%91/" rel="tag"># 基础开发</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/04/29/CI-CD-%E8%AF%B4%E6%98%8E/" rel="prev" title="CI/CD 说明">
+                  <i class="fa fa-chevron-left"></i> CI/CD 说明
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/04/29/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91%E4%BA%BA%E5%91%98%E8%83%BD%E5%8A%9B%E8%A6%81%E6%B1%82/" rel="next" title="前端开发人员能力要求">
+                  前端开发人员能力要求 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fas fa-users"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xiaoxi HU</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.ptlab.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="瓦片地图是指使用 GIS 软件或者工具对已有的画布图层按照设置好的显示规则生成供 web 使用的 TMS 瓦片地图. 可以通过 GeoServer, ArcGIS Server 或者其他桌面端 GIS 软件生成形如 ZZZZ&#x2F;XXXX&#x2F;YYYY.png 的一系列静态图片文件夹.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="瓦片地图制作">
+<meta property="og:url" content="https://blog.ptlab.top/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/index.html">
+<meta property="og:site_name" content="胡晓曦的博客">
+<meta property="og:description" content="瓦片地图是指使用 GIS 软件或者工具对已有的画布图层按照设置好的显示规则生成供 web 使用的 TMS 瓦片地图. 可以通过 GeoServer, ArcGIS Server 或者其他桌面端 GIS 软件生成形如 ZZZZ&#x2F;XXXX&#x2F;YYYY.png 的一系列静态图片文件夹.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.ptlab.top/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/zoom-level.jpg">
+<meta property="og:image" content="https://blog.ptlab.top/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/show-zoom.jpg">
+<meta property="og:image" content="https://blog.ptlab.top/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/add-layer.jpg">
+<meta property="og:image" content="https://blog.ptlab.top/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/update-symbol.jpg">
+<meta property="og:image" content="https://blog.ptlab.top/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/remove-boundary.jpg">
+<meta property="og:image" content="https://blog.ptlab.top/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/result.jpg">
+<meta property="og:image" content="https://blog.ptlab.top/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/xyz.jpg">
+<meta property="og:image" content="https://blog.ptlab.top/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/xyz-config.jpg">
+<meta property="og:image" content="https://blog.ptlab.top/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/xyz-folder.jpg">
+<meta property="article:published_time" content="2021-04-08T03:22:33.000Z">
+<meta property="article:modified_time" content="2023-05-11T07:33:34.107Z">
+<meta property="article:author" content="Xiaoxi HU">
+<meta property="article:tag" content="GIS">
+<meta property="article:tag" content="TMS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.ptlab.top/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/zoom-level.jpg">
+
+
+<link rel="canonical" href="https://blog.ptlab.top/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.ptlab.top/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/","path":"2021/04/08/瓦片地图制作/","title":"瓦片地图制作"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>瓦片地图制作 | 胡晓曦的博客</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">胡晓曦的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">个人开发文档</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fas fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fas fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%B6%E4%BD%9C%E5%B7%A5%E5%85%B7"><span class="nav-number">1.</span> <span class="nav-text">制作工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4"><span class="nav-number">2.</span> <span class="nav-text">步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E6%8F%92%E4%BB%B6%E6%9F%A5%E7%9C%8B%E5%90%88%E9%80%82%E7%BC%A9%E6%94%BE%E7%AD%89%E7%BA%A7"><span class="nav-number">2.1.</span> <span class="nav-text">安装插件查看合适缩放等级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%9B%BE%E5%B1%82"><span class="nav-number">2.2.</span> <span class="nav-text">添加图层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E6%95%B4%E5%9B%BE%E5%B1%82%E6%A0%B7%E5%BC%8F%E4%B8%8E%E6%98%BE%E7%A4%BA%E6%95%88%E6%9E%9C"><span class="nav-number">2.3.</span> <span class="nav-text">调整图层样式与显示效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE"><span class="nav-number">2.4.</span> <span class="nav-text">生成瓦片地图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2"><span class="nav-number">3.</span> <span class="nav-text">部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">使用</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Xiaoxi HU"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Xiaoxi HU</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/huxiaoxi1992" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;huxiaoxi1992" rel="noopener me" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.ptlab.top/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Xiaoxi HU">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="胡晓曦的博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="瓦片地图制作 | 胡晓曦的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          瓦片地图制作
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-04-08 11:22:33" itemprop="dateCreated datePublished" datetime="2021-04-08T11:22:33+08:00">2021-04-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-05-11 15:33:34" itemprop="dateModified" datetime="2023-05-11T15:33:34+08:00">2023-05-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/GIS/" itemprop="url" rel="index"><span itemprop="name">GIS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>瓦片地图是指使用 GIS 软件或者工具对已有的画布图层按照设置好的显示规则生成供 web 使用的 <a href="/2019/09/03/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E4%B8%8ETMS%E6%9C%8D%E5%8A%A1/" title="瓦片地图与TMS服务">TMS 瓦片地图</a>. 可以通过 <code>GeoServer</code>, <code>ArcGIS Server</code> 或者其他桌面端 GIS 软件生成形如 <code>ZZZZ/XXXX/YYYY.png</code> 的一系列静态图片文件夹.</p>
+<span id="more"></span>
+
+<h2 id="制作工具"><a href="#制作工具" class="headerlink" title="制作工具"></a>制作工具</h2><p>通过 <code>GeoServer</code>, <code>ArcGIS Server</code> 需要配置相应的图层设置和显示规则, 对于非开发人员不够直观, 最方便的瓦片地图制作方式是使用桌面端 GIS 软件完成瓦片地图的切片, 因此通常使用 <a target="_blank" rel="noopener" href="https://qgis.org/en/site/forusers/download.html">QGIS</a> 的<code>栅格工具</code>完成瓦片地图的生成.</p>
+<p>使用的 QGIS 版本需要大于 3.0</p>
+<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><h3 id="安装插件查看合适缩放等级"><a href="#安装插件查看合适缩放等级" class="headerlink" title="安装插件查看合适缩放等级"></a>安装插件查看合适缩放等级</h3><p>安装 <em>Zoom Level</em> 插件便于查看当前画布的适合缩放层级.</p>
+<p><img src="/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/zoom-level.jpg" alt="zoom-level"></p>
+<p>调整画布至合适大小, 可查看左下角的缩放等级</p>
+<p><img src="/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/show-zoom.jpg" alt="show-zoom"></p>
+<h3 id="添加图层"><a href="#添加图层" class="headerlink" title="添加图层"></a>添加图层</h3><p>按照需求依次添加底图, 标记点, 线等图层, 尽可能按照底图(可以是影像图, 也可以是 TMS, WTMS 等服务图片)</p>
+<p><img src="/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/add-layer.jpg" alt="add-layer"></p>
+<h3 id="调整图层样式与显示效果"><a href="#调整图层样式与显示效果" class="headerlink" title="调整图层样式与显示效果"></a>调整图层样式与显示效果</h3><ol>
+<li><p>修改矢量图层显示样式, 包括规则显示, 图标颜色设置等</p>
+</li>
+<li><p>修改栅格图层缩放重采样</p>
+<p><img src="/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/update-symbol.jpg" alt="修改缩放效果"></p>
+</li>
+<li><p>修改栅格图层显示透明度, 移除边界白条与黑边</p>
+<p><img src="/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/remove-boundary.jpg" alt="移除白边"><br><img src="/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/result.jpg" alt="最终效果"></p>
+</li>
+</ol>
+<h3 id="生成瓦片地图"><a href="#生成瓦片地图" class="headerlink" title="生成瓦片地图"></a>生成瓦片地图</h3><ol>
+<li><p>修改样式完成后, 选择 <code>工具箱-栅格工具-生成XYZ图块(目录)</code>, 如果找不到工具箱, 可以在<code>顶部菜单-地理处理-工具箱</code>打开.</p>
+<p><img src="/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/xyz.jpg" alt="生成瓦片地图"></p>
+</li>
+<li><p>配置底图切片的相关参数与输出路径, 完成后点击运行(可后台执行)</p>
+<p><img src="/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/xyz-config.jpg" alt="切片配置"></p>
+</li>
+</ol>
+<p>QGIS 将在指定目录生成如<code>&#123;z&#125;/&#123;x&#125;/&#123;y&#125;.png</code>格式的瓦片图片目录.</p>
+<p><img src="/2021/04/08/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E5%88%B6%E4%BD%9C/xyz-folder.jpg" alt="瓦片地图"></p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>生成的切片目录打包压缩后上传至服务器, 使用如 <code>nginx</code> 的静态资源服务完成 <code>TMS</code> 服务的搭建.</p>
+<ul>
+<li>可以通过开启 <code>http2</code> 多路复用提升大量图片同时请求的速度</li>
+<li>图片文件最好不要开启 gzip, gzip 对图片文件压缩率没有文本文件高, 且消耗资源</li>
+</ul>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>使用方法见 <a href="/2019/09/03/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E4%B8%8ETMS%E6%9C%8D%E5%8A%A1/" title="瓦片地图与TMS服务">TMS 瓦片地图</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/GIS/" rel="tag"># GIS</a>
+              <a href="/tags/TMS/" rel="tag"># TMS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/09/02/Mysql%E9%AB%98%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E8%A7%84%E8%8C%83%E5%BB%BA%E8%AE%AE/" rel="prev" title="Mysql高性能优化规范建议">
+                  <i class="fa fa-chevron-left"></i> Mysql高性能优化规范建议
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/04/08/GeoJSON%E6%A0%BC%E5%BC%8F%E8%AF%B4%E6%98%8E/" rel="next" title="GeoJSON格式说明">
+                  GeoJSON格式说明 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fas fa-users"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xiaoxi HU</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

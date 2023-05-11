@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.ptlab.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="命名风格方法名、参数名、成员变量、局部变量都统一使用 lowerCamelCase 风格，必须遵从驼峰形式。 正例： localValue &#x2F; getHttpMessage() &#x2F; inputUserId 其中 method 方法命名必须是 动词, 或者 动词+名词 形式 正例：saveShopCarData &#x2F;openShopCarInfoDialog 反例：save &#x2F; open &#x2F; show">
+<meta property="og:type" content="article">
+<meta property="og:title" content="代码命名规范">
+<meta property="og:url" content="https://blog.ptlab.top/2021/04/29/%E4%BB%A3%E7%A0%81%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83/index.html">
+<meta property="og:site_name" content="胡晓曦的博客">
+<meta property="og:description" content="命名风格方法名、参数名、成员变量、局部变量都统一使用 lowerCamelCase 风格，必须遵从驼峰形式。 正例： localValue &#x2F; getHttpMessage() &#x2F; inputUserId 其中 method 方法命名必须是 动词, 或者 动词+名词 形式 正例：saveShopCarData &#x2F;openShopCarInfoDialog 反例：save &#x2F; open &#x2F; show">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-04-29T06:44:19.000Z">
+<meta property="article:modified_time" content="2023-05-11T07:33:34.095Z">
+<meta property="article:author" content="Xiaoxi HU">
+<meta property="article:tag" content="基础开发">
+<meta property="article:tag" content="前端开发">
+<meta property="article:tag" content="后端开发">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.ptlab.top/2021/04/29/%E4%BB%A3%E7%A0%81%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.ptlab.top/2021/04/29/%E4%BB%A3%E7%A0%81%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83/","path":"2021/04/29/代码命名规范/","title":"代码命名规范"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>代码命名规范 | 胡晓曦的博客</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">胡晓曦的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">个人开发文档</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fas fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fas fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E5%90%8D%E9%A3%8E%E6%A0%BC"><span class="nav-number">1.</span> <span class="nav-text">命名风格</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E6%96%B9%E6%B3%95%E5%B8%B8%E7%94%A8%E7%9A%84%E5%8A%A8%E8%AF%8D"><span class="nav-number">2.</span> <span class="nav-text">函数方法常用的动词</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Xiaoxi HU"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Xiaoxi HU</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/huxiaoxi1992" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;huxiaoxi1992" rel="noopener me" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.ptlab.top/2021/04/29/%E4%BB%A3%E7%A0%81%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Xiaoxi HU">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="胡晓曦的博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="代码命名规范 | 胡晓曦的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          代码命名规范
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-04-29 14:44:19" itemprop="dateCreated datePublished" datetime="2021-04-29T14:44:19+08:00">2021-04-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-05-11 15:33:34" itemprop="dateModified" datetime="2023-05-11T15:33:34+08:00">2023-05-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">基础开发</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="命名风格"><a href="#命名风格" class="headerlink" title="命名风格"></a>命名风格</h2><p>方法名、参数名、成员变量、局部变量都统一使用 lowerCamelCase 风格，必须遵从<code>驼峰形式</code>。</p>
+<p><code>正例： localValue / getHttpMessage() / inputUserId</code></p>
+<p><em>其中 method 方法命名必须是 动词, 或者 动词+名词 形式</em></p>
+<p><code>正例：saveShopCarData /openShopCarInfoDialog</code></p>
+<p><code>反例：save / open / show / go</code></p>
+<p><em>特此说明，增删查改，详情统一使用如下 5 个单词，不得使用其他（目的是为了统一各个端）</em></p>
+<p><code>add / update / delete / detail / get</code></p>
+<span id="more"></span>
+
+<h2 id="函数方法常用的动词"><a href="#函数方法常用的动词" class="headerlink" title="函数方法常用的动词"></a>函数方法常用的动词</h2><table>
+<thead>
+<tr>
+<th>动词</th>
+<th>说明</th>
+<th>动词</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>get</td>
+<td>获取</td>
+<td>set</td>
+<td>设置</td>
+</tr>
+<tr>
+<td>add</td>
+<td>增加</td>
+<td>remove</td>
+<td>删除</td>
+</tr>
+<tr>
+<td>create</td>
+<td>创建</td>
+<td>destroy</td>
+<td>移除</td>
+</tr>
+<tr>
+<td>start</td>
+<td>启动</td>
+<td>stop</td>
+<td>停止</td>
+</tr>
+<tr>
+<td>open</td>
+<td>打开</td>
+<td>close</td>
+<td>关闭</td>
+</tr>
+<tr>
+<td>read</td>
+<td>读取</td>
+<td>write</td>
+<td>写入</td>
+</tr>
+<tr>
+<td>load</td>
+<td>载入</td>
+<td>save</td>
+<td>保存</td>
+</tr>
+<tr>
+<td>create</td>
+<td>创建</td>
+<td>destroy</td>
+<td>销毁</td>
+</tr>
+<tr>
+<td>begin</td>
+<td>开始</td>
+<td>end</td>
+<td>结束</td>
+</tr>
+<tr>
+<td>backup</td>
+<td>备份</td>
+<td>restore</td>
+<td>恢复</td>
+</tr>
+<tr>
+<td>import</td>
+<td>导入</td>
+<td>export</td>
+<td>导出</td>
+</tr>
+<tr>
+<td>split</td>
+<td>分割</td>
+<td>merge</td>
+<td>合并</td>
+</tr>
+<tr>
+<td>inject</td>
+<td>注入</td>
+<td>extract</td>
+<td>提取</td>
+</tr>
+<tr>
+<td>attach</td>
+<td>附着</td>
+<td>detach</td>
+<td>脱离</td>
+</tr>
+<tr>
+<td>bind</td>
+<td>绑定</td>
+<td>separate</td>
+<td>分离</td>
+</tr>
+<tr>
+<td>view</td>
+<td>查看</td>
+<td>browse</td>
+<td>浏览</td>
+</tr>
+<tr>
+<td>edit</td>
+<td>编辑</td>
+<td>modify</td>
+<td>修改</td>
+</tr>
+<tr>
+<td>select</td>
+<td>选取</td>
+<td>mark</td>
+<td>标记</td>
+</tr>
+<tr>
+<td>copy</td>
+<td>复制</td>
+<td>paste</td>
+<td>粘贴</td>
+</tr>
+<tr>
+<td>undo</td>
+<td>撤销</td>
+<td>redo</td>
+<td>重做</td>
+</tr>
+<tr>
+<td>insert</td>
+<td>插入</td>
+<td>delete</td>
+<td>移除</td>
+</tr>
+<tr>
+<td>add</td>
+<td>加入</td>
+<td>append</td>
+<td>添加</td>
+</tr>
+<tr>
+<td>clean</td>
+<td>清理</td>
+<td>clear</td>
+<td>清除</td>
+</tr>
+<tr>
+<td>index</td>
+<td>索引</td>
+<td>sort</td>
+<td>排序</td>
+</tr>
+<tr>
+<td>find</td>
+<td>查找</td>
+<td>search</td>
+<td>搜索</td>
+</tr>
+<tr>
+<td>increase</td>
+<td>增加</td>
+<td>decrease</td>
+<td>减少</td>
+</tr>
+<tr>
+<td>play</td>
+<td>播放</td>
+<td>pause</td>
+<td>暂停</td>
+</tr>
+<tr>
+<td>launch</td>
+<td>启动</td>
+<td>run</td>
+<td>运行</td>
+</tr>
+<tr>
+<td>compile</td>
+<td>编译</td>
+<td>execute</td>
+<td>执行</td>
+</tr>
+<tr>
+<td>debug</td>
+<td>调试</td>
+<td>trace</td>
+<td>跟踪</td>
+</tr>
+<tr>
+<td>observe</td>
+<td>观察</td>
+<td>listen</td>
+<td>监听</td>
+</tr>
+<tr>
+<td>build</td>
+<td>构建</td>
+<td>publish</td>
+<td>发布</td>
+</tr>
+<tr>
+<td>input</td>
+<td>输入</td>
+<td>output</td>
+<td>输出</td>
+</tr>
+<tr>
+<td>encode</td>
+<td>编码</td>
+<td>decode</td>
+<td>解码</td>
+</tr>
+<tr>
+<td>encrypt</td>
+<td>加密</td>
+<td>decrypt</td>
+<td>解密</td>
+</tr>
+<tr>
+<td>compress</td>
+<td>压缩</td>
+<td>decompress</td>
+<td>解压缩</td>
+</tr>
+<tr>
+<td>pack</td>
+<td>打包</td>
+<td>unpack</td>
+<td>解包</td>
+</tr>
+<tr>
+<td>parse</td>
+<td>解析</td>
+<td>emit</td>
+<td>生成</td>
+</tr>
+<tr>
+<td>connect</td>
+<td>连接</td>
+<td>disconnect</td>
+<td>断开</td>
+</tr>
+<tr>
+<td>send</td>
+<td>发送</td>
+<td>receive</td>
+<td>接收</td>
+</tr>
+<tr>
+<td>download</td>
+<td>下载</td>
+<td>upload</td>
+<td>上传</td>
+</tr>
+<tr>
+<td>refresh</td>
+<td>刷新</td>
+<td>sync</td>
+<td>同步</td>
+</tr>
+<tr>
+<td>update</td>
+<td>更新</td>
+<td>revert</td>
+<td>复原</td>
+</tr>
+<tr>
+<td>lock</td>
+<td>锁定</td>
+<td>unlock</td>
+<td>解锁</td>
+</tr>
+<tr>
+<td>checkOut</td>
+<td>签出</td>
+<td>checkIn</td>
+<td>签入</td>
+</tr>
+<tr>
+<td>submit</td>
+<td>提交</td>
+<td>commit</td>
+<td>交付</td>
+</tr>
+<tr>
+<td>push</td>
+<td>推</td>
+<td>pull</td>
+<td>拉</td>
+</tr>
+<tr>
+<td>expand</td>
+<td>展开</td>
+<td>collapse</td>
+<td>折叠</td>
+</tr>
+<tr>
+<td>begin</td>
+<td>起始</td>
+<td>end</td>
+<td>结束</td>
+</tr>
+<tr>
+<td>start</td>
+<td>开始</td>
+<td>finish</td>
+<td>完成</td>
+</tr>
+<tr>
+<td>enter</td>
+<td>进入</td>
+<td>exit</td>
+<td>退出</td>
+</tr>
+<tr>
+<td>abort</td>
+<td>放弃</td>
+<td>quit</td>
+<td>离开</td>
+</tr>
+<tr>
+<td>obsolete</td>
+<td>废弃</td>
+<td>depreciate</td>
+<td>废旧</td>
+</tr>
+<tr>
+<td>collect</td>
+<td>收集</td>
+<td>aggregate</td>
+<td>聚集</td>
+</tr>
+</tbody></table>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%9F%BA%E7%A1%80%E5%BC%80%E5%8F%91/" rel="tag"># 基础开发</a>
+              <a href="/tags/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/" rel="tag"># 前端开发</a>
+              <a href="/tags/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/" rel="tag"># 后端开发</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/04/08/GeoJSON%E6%A0%BC%E5%BC%8F%E8%AF%B4%E6%98%8E/" rel="prev" title="GeoJSON格式说明">
+                  <i class="fa fa-chevron-left"></i> GeoJSON格式说明
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/04/29/CI-CD-%E8%AF%B4%E6%98%8E/" rel="next" title="CI/CD 说明">
+                  CI/CD 说明 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fas fa-users"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xiaoxi HU</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

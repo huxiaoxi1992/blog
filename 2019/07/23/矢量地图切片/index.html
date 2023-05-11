@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.ptlab.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="矢量地图数据切片使用 tippecanoe 进行矢量地图切片, 切片格式由 geojson 转为 pbf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="矢量地图切片 - mapbox 本地化">
+<meta property="og:url" content="https://blog.ptlab.top/2019/07/23/%E7%9F%A2%E9%87%8F%E5%9C%B0%E5%9B%BE%E5%88%87%E7%89%87/index.html">
+<meta property="og:site_name" content="胡晓曦的博客">
+<meta property="og:description" content="矢量地图数据切片使用 tippecanoe 进行矢量地图切片, 切片格式由 geojson 转为 pbf">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-07-23T03:56:38.000Z">
+<meta property="article:modified_time" content="2023-05-11T07:33:34.115Z">
+<meta property="article:author" content="Xiaoxi HU">
+<meta property="article:tag" content="GIS">
+<meta property="article:tag" content="mapbox">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://blog.ptlab.top/2019/07/23/%E7%9F%A2%E9%87%8F%E5%9C%B0%E5%9B%BE%E5%88%87%E7%89%87/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.ptlab.top/2019/07/23/%E7%9F%A2%E9%87%8F%E5%9C%B0%E5%9B%BE%E5%88%87%E7%89%87/","path":"2019/07/23/矢量地图切片/","title":"矢量地图切片 - mapbox 本地化"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>矢量地图切片 - mapbox 本地化 | 胡晓曦的博客</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">胡晓曦的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">个人开发文档</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fas fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fas fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9F%A2%E9%87%8F%E5%9C%B0%E5%9B%BE%E6%95%B0%E6%8D%AE%E5%88%87%E7%89%87"><span class="nav-number">1.</span> <span class="nav-text">矢量地图数据切片</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">1.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E8%88%AC%E6%95%B0%E6%8D%AE%E7%94%9F%E4%BA%A7%E4%BD%BF%E7%94%A8"><span class="nav-number">1.2.</span> <span class="nav-text">一般数据生产使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9"><span class="nav-number">1.3.</span> <span class="nav-text">常用选项</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BE%93%E5%87%BA%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.3.1.</span> <span class="nav-text">输出格式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%87%E7%89%87%E6%8F%8F%E8%BF%B0%E4%B8%8E%E6%B0%B4%E5%8D%B0"><span class="nav-number">1.3.2.</span> <span class="nav-text">切片描述与水印</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6%E5%92%8C%E5%9B%BE%E5%B1%82%E5%90%8D%E7%A7%B0"><span class="nav-number">1.3.3.</span> <span class="nav-text">输入文件和图层名称</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6%E7%9A%84%E6%8A%95%E5%BD%B1"><span class="nav-number">1.3.4.</span> <span class="nav-text">输入文件的投影</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%A9%E6%94%BE%E7%AD%89%E7%BA%A7"><span class="nav-number">1.3.5.</span> <span class="nav-text">缩放等级</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%87%E7%89%87%E5%88%86%E8%BE%A8%E7%8E%87"><span class="nav-number">1.3.6.</span> <span class="nav-text">切片分辨率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B1%9E%E6%80%A7%E8%A1%A8%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="nav-number">1.3.7.</span> <span class="nav-text">属性表过滤器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E3%80%81%E9%9D%A2%E7%9A%84%E7%AE%80%E5%8C%96"><span class="nav-number">1.3.8.</span> <span class="nav-text">线、面的简化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%AC%E5%85%B1%E9%9D%A2%E8%BE%B9%E7%95%8C%E4%BC%98%E5%8C%96"><span class="nav-number">1.3.9.</span> <span class="nav-text">公共面边界优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A3%81%E5%89%AA%E5%88%87%E7%89%87%E8%BE%B9%E7%95%8C"><span class="nav-number">1.3.10.</span> <span class="nav-text">裁剪切片边界</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%87%E7%89%87%E8%A6%81%E7%B4%A0%E9%87%8D%E6%8E%92"><span class="nav-number">1.3.11.</span> <span class="nav-text">切片要素重排</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A2%9E%E5%8A%A0%E8%AE%A1%E7%AE%97%E7%9A%84%E9%A2%9D%E5%A4%96%E5%AD%97%E6%AE%B5"><span class="nav-number">1.3.12.</span> <span class="nav-text">增加计算的额外字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%AE%E5%A4%8D%E7%A0%B4%E6%8D%9F%E5%87%A0%E4%BD%95"><span class="nav-number">1.3.13.</span> <span class="nav-text">修复破损几何</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%87%E7%89%87%E5%A4%A7%E5%B0%8F%E8%AE%BE"><span class="nav-number">1.3.14.</span> <span class="nav-text">切片大小设</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%B4%E6%97%B6%E5%82%A8%E5%AD%98"><span class="nav-number">1.3.15.</span> <span class="nav-text">临时储存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%93%E6%9E%9C%E6%8C%87%E7%A4%BA%E5%99%A8"><span class="nav-number">1.3.16.</span> <span class="nav-text">结果指示器</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Xiaoxi HU"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Xiaoxi HU</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/huxiaoxi1992" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;huxiaoxi1992" rel="noopener me" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.ptlab.top/2019/07/23/%E7%9F%A2%E9%87%8F%E5%9C%B0%E5%9B%BE%E5%88%87%E7%89%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Xiaoxi HU">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="胡晓曦的博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="矢量地图切片 - mapbox 本地化 | 胡晓曦的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          矢量地图切片 - mapbox 本地化
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-23 11:56:38" itemprop="dateCreated datePublished" datetime="2019-07-23T11:56:38+08:00">2019-07-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-05-11 15:33:34" itemprop="dateModified" datetime="2023-05-11T15:33:34+08:00">2023-05-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/GIS/" itemprop="url" rel="index"><span itemprop="name">GIS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="矢量地图数据切片"><a href="#矢量地图数据切片" class="headerlink" title="矢量地图数据切片"></a>矢量地图数据切片</h2><p>使用 <a target="_blank" rel="noopener" href="https://github.com/mapbox/tippecanoe">tippecanoe</a> 进行矢量地图切片, 切片格式由 geojson 转为 pbf</p>
+<span id="more"></span>
+
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><ul>
+<li>需求 linux 环境</li>
+<li>需要 sqlite3, zlib 两个库文件</li>
+</ul>
+<ol>
+<li>安装库文件支持</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">--------------------------------</span><br><span class="line"><span class="comment">#ubuntu系统</span></span><br><span class="line"><span class="comment">#安装make</span></span><br><span class="line">sudo apt-get install build-essential libsqlite3-dev zlib1g-dev</span><br><span class="line">----------------------------------</span><br><span class="line"><span class="comment">#centos系统</span></span><br><span class="line"><span class="comment">#安装并升级gcc</span></span><br><span class="line">yum -y install gcc-c++</span><br><span class="line"><span class="comment">#安装gcc-5.4.0</span></span><br><span class="line">wget http://ftp.tsukuba.wide.ad.jp/software/gcc/releases/gcc-5.4.0/gcc-5.4.0.tar.bz2</span><br><span class="line">tar -xvf gcc-5.4.0.tar.bz2</span><br><span class="line"><span class="built_in">cd</span> gcc-5.4.0</span><br><span class="line"><span class="comment">#下面扩展的安装最好使用代理</span></span><br><span class="line">./contrib/download_prerequisites</span><br><span class="line"><span class="built_in">mkdir</span> build</span><br><span class="line"><span class="built_in">cd</span> build</span><br><span class="line">../configure --enable-checking=release --enable-languages=c,c++ --disable-multilib</span><br><span class="line">make</span><br><span class="line">make install</span><br><span class="line"><span class="comment">#安装完成后重启</span></span><br><span class="line"><span class="comment">#查看GLIBC文件</span></span><br><span class="line">strings /lib64/libstdc++.so.6 | grep GLIBC</span><br><span class="line"><span class="comment">#如果未发现 GLIBCXX_3.4.21, 执行下面SO文件替换</span></span><br><span class="line"><span class="built_in">cp</span> /usr/local/lib64/libstdc++.so.6.0.21 /lib64</span><br><span class="line"><span class="built_in">cd</span> /lib64</span><br><span class="line"><span class="built_in">rm</span> -rf libstdc++.so.6</span><br><span class="line"><span class="built_in">ln</span> -s libstdc++.so.6.0.21 libstdc++.so.6</span><br><span class="line"><span class="comment"># 安装其他库</span></span><br><span class="line">yum install sqlite-devel zlib-devel</span><br><span class="line">----------------------------------------</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>安装 tippecanoe</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#下载</span></span><br><span class="line">$ git <span class="built_in">clone</span> https://github.com/mapbox/tippecanoe.git</span><br><span class="line"></span><br><span class="line"><span class="comment">#编译及安装</span></span><br><span class="line">$ <span class="built_in">cd</span> tippecanoe</span><br><span class="line">$ make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+
+<h3 id="一般数据生产使用"><a href="#一般数据生产使用" class="headerlink" title="一般数据生产使用"></a>一般数据生产使用</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tippecanoe -e [文件夹名称] -z [最大缩放等级] -Z [最小缩放等级] -pC XX.geojson</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ tippecanoe -e test -s EPSG:3857 -z 20 -Z 18  -pC polygon.geojson</span><br><span class="line">//批处理</span><br><span class="line">$ tippecanoe -e maps  -z 20 -Z 18  -pC `ls`</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>将 polygon.geojson 文件进行矢量切片, 传入的坐标系为 3857, 切片等级 12-18, 切片生成的目录名称为 test, 不使用 geobuf 压缩</li>
+</ul>
+<h3 id="常用选项"><a href="#常用选项" class="headerlink" title="常用选项"></a>常用选项</h3><p>通常情况, 我们需要将 geojson 文件转换为 geobuf。</p>
+<p>使用方法为：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tippecanoe -o file.mbtiles [options] [file.json file.geobuf ...]</span><br></pre></td></tr></table></figure>
+
+<h4 id="输出格式"><a href="#输出格式" class="headerlink" title="输出格式"></a>输出格式</h4><ul>
+<li><code>-o</code> <em>file</em><code>.mbtiles</code> or <code>--output=</code><em>file</em><code>.mbtiles</code>: 输出 mbtiles 文件</li>
+<li><code>-e</code> <em>directory</em> or <code>--output-to-directory</code>&#x3D;<em>directory</em>: 输出文件至指定 <em>目录</em></li>
+<li><code>-f</code> or <code>--force</code>: 如果 mbtiles 文件已存在, 则删除它</li>
+<li><code>-F</code> or <code>--allow-existing</code>: 如果已经存在对应的文件, 不删除已存在的文件</li>
+</ul>
+<h4 id="切片描述与水印"><a href="#切片描述与水印" class="headerlink" title="切片描述与水印"></a>切片描述与水印</h4><ul>
+<li><code>-n</code> <em>name</em> or <code>--name=</code><em>name</em>: （默认）生成 XXX.json 作为可读的切片描述</li>
+<li><code>-A</code> <em>text</em> or <code>--attribution=</code><em>text</em>: 切片水印</li>
+<li><code>-N</code> <em>description</em> or <code>--description=</code><em>description</em>: 生成 XXX.mbtiles 作为切片描述</li>
+</ul>
+<h4 id="输入文件和图层名称"><a href="#输入文件和图层名称" class="headerlink" title="输入文件和图层名称"></a>输入文件和图层名称</h4><ul>
+<li><em>name</em><code>.json</code> or <em>name</em><code>.geojson</code>: 将 geojson 的 <em>name</em> 写入图层名称, 命名为 <em>name</em></li>
+<li><em>name</em><code>.geobuf</code> or <em>name</em><code>.geobuf</code>: 将 geobuf 的 <em>name</em> 写入图层名称, 命名为 <em>name</em></li>
+<li><code>-l</code> <em>name</em> or <code>--layer=</code><em>name</em>: 使用指定的名称而不是输入文件名称作为图层名称</li>
+<li><code>-L</code> <em>name</em><code>:</code><em>file.json</em> or <code>--named-layer=</code><em>name</em><code>:</code><em>file.json</em>: 对每一个文件指定图层名称</li>
+</ul>
+<h4 id="输入文件的投影"><a href="#输入文件的投影" class="headerlink" title="输入文件的投影"></a>输入文件的投影</h4><ul>
+<li><code>-s</code> <em>projection</em> or <code>--projection=</code><em>projection</em>: 指定输入文件的坐标系 <code>EPSG:4326</code> (默认 WGS84) and <code>EPSG:3857</code> (Web Mercator). 通常情况下, 使用 WGS84 作为输入文件的坐标系</li>
+</ul>
+<h4 id="缩放等级"><a href="#缩放等级" class="headerlink" title="缩放等级"></a>缩放等级</h4><ul>
+<li><code>-z</code> <em>zoom</em> or <code>--maximum-zoom=</code><em>zoom</em>: 最大缩放等级</li>
+<li><code>-zg</code> or <code>--maximum-zoom=g</code>: 默认使用估算合理的最大缩放等级</li>
+<li><code>-Z</code> <em>zoom</em> or <code>--minimum-zoom=</code><em>zoom</em>: 最小缩放等级</li>
+<li><code>-ae</code> or <code>--extend-zooms-if-still-dropping</code>: 如果最小要素依然存在, 增大最大的缩放等级</li>
+</ul>
+<h4 id="切片分辨率"><a href="#切片分辨率" class="headerlink" title="切片分辨率"></a>切片分辨率</h4><ul>
+<li><code>-d</code> <em>detail</em> or <code>--full-detail=</code><em>detail</em>: 最大缩放等级的分辨率(默认 12 级, 切片分比率 2^12&#x3D;4096)</li>
+<li><code>-D</code> <em>detail</em> or <code>--low-detail=</code><em>detail</em>: 较低等级的分辨率(默认 12 级, 切片分比率 2^12&#x3D;4096)</li>
+<li><code>-m</code> <em>detail</em> or <code>--minimum-detail=</code><em>detail</em>: 最小的分辨率（默认 7 级）</li>
+</ul>
+<h4 id="属性表过滤器"><a href="#属性表过滤器" class="headerlink" title="属性表过滤器"></a>属性表过滤器</h4><ul>
+<li><code>-x</code> <em>name</em> or <code>--exclude=</code><em>name</em>: 移除所有要素对应的指定字段</li>
+<li><code>-y</code> <em>name</em> or <code>--include=</code><em>name</em>: 移除所有空字段要素</li>
+<li><code>-X</code> or <code>--exclude-all</code>: 移除所有属性字段, 只保留几何字段</li>
+<li><code>-T</code><em>attribute</em><code>:</code><em>type</em> or <code>--attribute-type=</code><em>attribute</em><code>:</code><em>type</em>: 改变指定字段的类别：<code>string</code>, <code>float</code>, <code>int</code>, <code>bool</code>.</li>
+<li><code>-j</code> <em>filter</em> or <code>--feature-filter</code>&#x3D;<em>filter</em>: 字段过滤, <code>&quot;*&quot;</code>表示使用所有图层, 使用 mapbox 过滤函数</li>
+<li><code>-J</code> <em>filter-file</em> or <code>--feature-filter-file</code>&#x3D;<em>filter-file</em>: 和<code>&quot;-j&quot;</code>一样, 只不过从文件中过滤</li>
+</ul>
+<p>字段过滤 example:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ tippecanoe -z 5 -o filtered.mbtiles -j <span class="string">&#x27;&#123; &quot;ne_10m_admin_0_countries&quot;: [ &quot;all&quot;, [ &quot;&lt;&quot;, &quot;scalerank&quot;, 3 ], [ &quot;&gt;&quot;, &quot;LABELRANK&quot;, 5 ] ] &#125;&#x27;</span> ne_10m_admin_0_countries.geojson</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="线、面的简化"><a href="#线、面的简化" class="headerlink" title="线、面的简化"></a>线、面的简化</h4><ul>
+<li><code>-S</code> <em>scale</em> or <code>--simplification=</code><em>scale</em>: 容差</li>
+<li><code>-ps</code> or <code>--no-line-simplification</code>: 无线简化</li>
+<li><code>-pS</code> or <code>--simplify-only-low-zooms</code>: 在高缩放等级时不简化</li>
+<li><code>-pt</code> or <code>--no-tiny-polygon-reduction</code>: 不合并面</li>
+</ul>
+<h4 id="公共面边界优化"><a href="#公共面边界优化" class="headerlink" title="公共面边界优化"></a>公共面边界优化</h4><ul>
+<li><code>-ab</code> or <code>--detect-shared-borders</code>: 检测公共边界并简化</li>
+<li><code>-aL</code> or <code>--grid-low-zooms</code>: 线、面吸附</li>
+</ul>
+<h4 id="裁剪切片边界"><a href="#裁剪切片边界" class="headerlink" title="裁剪切片边界"></a>裁剪切片边界</h4><ul>
+<li><code>-b</code> <em>pixels</em> or <code>--buffer=</code><em>pixels</em>: 缓冲区（默认 5, 2^5&#x3D;32）</li>
+<li><code>-pc</code> or <code>--no-clipping</code>: 不裁剪</li>
+<li><code>-pD</code> or <code>--no-duplication</code>: 无重复</li>
+</ul>
+<h4 id="切片要素重排"><a href="#切片要素重排" class="headerlink" title="切片要素重排"></a>切片要素重排</h4><ul>
+<li><code>-pi</code> or <code>--preserve-input-order</code>: 以输入顺序作为绘制顺序</li>
+<li><code>-ao</code> or <code>--reorder</code>: 所有同属性要素按顺序重排</li>
+<li><code>-ac</code> or <code>--coalesce</code>: 合并具有相同属性的相邻线、面</li>
+<li><code>-ar</code> or <code>--reverse</code>: 合并相邻但反向的线段</li>
+</ul>
+<h4 id="增加计算的额外字段"><a href="#增加计算的额外字段" class="headerlink" title="增加计算的额外字段"></a>增加计算的额外字段</h4><ul>
+<li><code>-ag</code> or <code>--calculate-feature-density</code>: 增加字段<code>tippecanoe_feature_density</code>, 用于描述切片中的要素密度</li>
+</ul>
+<h4 id="修复破损几何"><a href="#修复破损几何" class="headerlink" title="修复破损几何"></a>修复破损几何</h4><ul>
+<li><code>-aw</code> or <code>--detect-longitude-wraparound</code>: 检测相邻点, 并修复几何</li>
+</ul>
+<h4 id="切片大小设"><a href="#切片大小设" class="headerlink" title="切片大小设"></a>切片大小设</h4><ul>
+<li><code>-M</code> <em>bytes</em> or <code>--maximum-tile-bytes=</code><em>bytes</em>: 切片大小指定（默认 500k）</li>
+<li><code>-pf</code> or <code>--no-feature-limit</code>: 切片要素数量限制（默认 20W）</li>
+<li><code>-pk</code> or <code>--no-tile-size-limit</code>: 不使用切片大小限制</li>
+<li><code>-pC</code> or <code>--no-tile-compression</code>: 不使用 PBF 压缩（<strong>此处必须选择, 否则 mapbox 无法使用</strong>）</li>
+<li><code>-pg</code> or <code>--no-tile-stats</code>: 不生成切片信息</li>
+</ul>
+<h4 id="临时储存"><a href="#临时储存" class="headerlink" title="临时储存"></a>临时储存</h4><ul>
+<li><code>-t</code> <em>directory</em> or <code>--temporary-directory=</code><em>directory</em>: 临时目录, 如果未指定, 使用<code>/tmp</code>.</li>
+</ul>
+<h4 id="结果指示器"><a href="#结果指示器" class="headerlink" title="结果指示器"></a>结果指示器</h4><ul>
+<li><code>-q</code> or <code>--quiet</code>: 静默模式</li>
+<li><code>-v</code> or <code>--version</code>: 返回 Tippecanoe 版本号</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/GIS/" rel="tag"># GIS</a>
+              <a href="/tags/mapbox/" rel="tag"># mapbox</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/07/23/webpack-%E9%85%8D%E7%BD%AE/" rel="prev" title="webpack 配置">
+                  <i class="fa fa-chevron-left"></i> webpack 配置
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/07/23/%E9%9B%AA%E7%A2%A7%E5%9B%BE%E5%88%B6%E4%BD%9C/" rel="next" title="雪碧图制作 - mapbox 本地化">
+                  雪碧图制作 - mapbox 本地化 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fas fa-users"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xiaoxi HU</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

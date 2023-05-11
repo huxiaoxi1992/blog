@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.ptlab.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="瓦片切片方式切片的规则存在 TMS、Google Maps、百度和 QuadTree 的方式，TMS 定义切片的开始从地图左下角开始，即中心点（origin）在左下角，Google Maps 的切片定义中心点在左上角，QuadTree 是必应地图使用的一种切片命名格式，TMS 和 Google Maps 是将地图以 x&#x2F;y&#x2F;z 的方式存储读取，QuadTree 将 x&amp;#x2F">
+<meta property="og:type" content="article">
+<meta property="og:title" content="瓦片地图与TMS服务">
+<meta property="og:url" content="https://blog.ptlab.top/2019/09/03/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E4%B8%8ETMS%E6%9C%8D%E5%8A%A1/index.html">
+<meta property="og:site_name" content="胡晓曦的博客">
+<meta property="og:description" content="瓦片切片方式切片的规则存在 TMS、Google Maps、百度和 QuadTree 的方式，TMS 定义切片的开始从地图左下角开始，即中心点（origin）在左下角，Google Maps 的切片定义中心点在左上角，QuadTree 是必应地图使用的一种切片命名格式，TMS 和 Google Maps 是将地图以 x&#x2F;y&#x2F;z 的方式存储读取，QuadTree 将 x&amp;#x2F">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.ptlab.top/2019/09/03/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E4%B8%8ETMS%E6%9C%8D%E5%8A%A1/tms.jpg">
+<meta property="og:image" content="https://blog.ptlab.top/2019/09/03/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E4%B8%8ETMS%E6%9C%8D%E5%8A%A1/browser.png">
+<meta property="og:image" content="https://blog.ptlab.top/2019/09/03/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E4%B8%8ETMS%E6%9C%8D%E5%8A%A1/url.png">
+<meta property="og:image" content="https://blog.ptlab.top/2019/09/03/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E4%B8%8ETMS%E6%9C%8D%E5%8A%A1/addLayer.png">
+<meta property="article:published_time" content="2019-09-03T03:40:35.000Z">
+<meta property="article:modified_time" content="2023-05-11T07:33:34.099Z">
+<meta property="article:author" content="Xiaoxi HU">
+<meta property="article:tag" content="GIS">
+<meta property="article:tag" content="TMS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.ptlab.top/2019/09/03/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E4%B8%8ETMS%E6%9C%8D%E5%8A%A1/tms.jpg">
+
+
+<link rel="canonical" href="https://blog.ptlab.top/2019/09/03/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E4%B8%8ETMS%E6%9C%8D%E5%8A%A1/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.ptlab.top/2019/09/03/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E4%B8%8ETMS%E6%9C%8D%E5%8A%A1/","path":"2019/09/03/瓦片地图与TMS服务/","title":"瓦片地图与TMS服务"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>瓦片地图与TMS服务 | 胡晓曦的博客</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">胡晓曦的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">个人开发文档</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fas fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fas fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%93%A6%E7%89%87%E5%88%87%E7%89%87%E6%96%B9%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">瓦片切片方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%93%A6%E7%89%87%E7%BC%96%E5%8F%B7"><span class="nav-number">1.1.</span> <span class="nav-text">瓦片编号</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QGIS-%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">QGIS 配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E9%9D%A2%E6%9D%BF"><span class="nav-number">2.1.</span> <span class="nav-text">浏览器面板</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B0%E5%BB%BA%E8%BF%9E%E6%8E%A5"><span class="nav-number">2.2.</span> <span class="nav-text">新建连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E8%BD%BD%E5%BA%95%E5%9B%BE"><span class="nav-number">2.3.</span> <span class="nav-text">加载底图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%9A%84-TMS-URL"><span class="nav-number">3.</span> <span class="nav-text">常用的 TMS_URL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%B7%E6%AD%8C%E5%9C%B0%E5%9D%80%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E"><span class="nav-number">4.</span> <span class="nav-text">谷歌地址配置说明</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Xiaoxi HU"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Xiaoxi HU</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/huxiaoxi1992" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;huxiaoxi1992" rel="noopener me" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.ptlab.top/2019/09/03/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E4%B8%8ETMS%E6%9C%8D%E5%8A%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Xiaoxi HU">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="胡晓曦的博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="瓦片地图与TMS服务 | 胡晓曦的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          瓦片地图与TMS服务
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-09-03 11:40:35" itemprop="dateCreated datePublished" datetime="2019-09-03T11:40:35+08:00">2019-09-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-05-11 15:33:34" itemprop="dateModified" datetime="2023-05-11T15:33:34+08:00">2023-05-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/GIS/" itemprop="url" rel="index"><span itemprop="name">GIS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="瓦片切片方式"><a href="#瓦片切片方式" class="headerlink" title="瓦片切片方式"></a>瓦片切片方式</h2><p>切片的规则存在 TMS、Google Maps、百度和 QuadTree 的方式，TMS 定义切片的开始从地图左下角开始，即中心点（origin）在左下角，Google Maps 的切片定义中心点在左上角，QuadTree 是必应地图使用的一种切片命名格式，TMS 和 Google Maps 是将地图以 x&#x2F;y&#x2F;z 的方式存储读取，QuadTree 将 x&#x2F;y 转换成二进制的形式，进行存储读取，原理是一样的，只是命名规则不同。</p>
+<span id="more"></span>
+
+<h3 id="瓦片编号"><a href="#瓦片编号" class="headerlink" title="瓦片编号"></a>瓦片编号</h3><p>瓦片生成后，就是一堆图片。怎么对这堆图片进行编号，是目前主流互联网地图商分歧最大的地方。总结起来分为四个流派：</p>
+<ol>
+<li>谷歌 XYZ：Z 表示缩放层级，Z&#x3D;zoom；XY 的原点在左上角，X 从左向右，Y 从上向下，ArcServer 和高德地图切片规则和谷歌地图一致，WTMS 是 OGC（OGC-WTMS）的标准也和这个一样。</li>
+<li>TMS（OSGeo-TMS 标准）：开源产品的标准，Z 的定义与谷歌相同；XY 的原点在左下角，X 从左向右，Y 从下向上。</li>
+<li>百度 XYZ：Z 从 1 开始，在最高级就把地图分为四块瓦片；XY 的原点在经度为 0 纬度位 0 的位置，X 从左向右，Y 从下向上。</li>
+<li>必应地图的 QuadTree</li>
+</ol>
+<p><img src="/2019/09/03/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E4%B8%8ETMS%E6%9C%8D%E5%8A%A1/tms.jpg" alt="瓦片编号"></p>
+<h2 id="QGIS-配置"><a href="#QGIS-配置" class="headerlink" title="QGIS 配置"></a>QGIS 配置</h2><blockquote>
+<p>QGIS 版本需要大于等于 2.16</p>
+</blockquote>
+<h3 id="浏览器面板"><a href="#浏览器面板" class="headerlink" title="浏览器面板"></a>浏览器面板</h3><p><img src="/2019/09/03/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E4%B8%8ETMS%E6%9C%8D%E5%8A%A1/browser.png" alt="浏览器面板"></p>
+<h3 id="新建连接"><a href="#新建连接" class="headerlink" title="新建连接"></a>新建连接</h3><p>右键 -&gt; 新建连接 -&gt; 复制下面常用的 TMS_URL</p>
+<p><img src="/2019/09/03/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E4%B8%8ETMS%E6%9C%8D%E5%8A%A1/url.png" alt="新建连接"></p>
+<h3 id="加载底图"><a href="#加载底图" class="headerlink" title="加载底图"></a>加载底图</h3><p>添加图层至图层面板</p>
+<p><img src="/2019/09/03/%E7%93%A6%E7%89%87%E5%9C%B0%E5%9B%BE%E4%B8%8ETMS%E6%9C%8D%E5%8A%A1/addLayer.png" alt="添加图层"></p>
+<h2 id="常用的-TMS-URL"><a href="#常用的-TMS-URL" class="headerlink" title="常用的 TMS_URL"></a>常用的 TMS_URL</h2><ol>
+<li>2gis_map: <code>http://tile2.maps.2gis.com/tiles?x=&#123;x&#125;&amp;y=&#123;y&#125;&amp;z=&#123;z&#125;&amp;v=1.1</code></li>
+<li>Bingmap: <code>http://ecn.dynamic.t0.tiles.virtualearth.net/comp/CompositionHandler/&#123;q&#125;?mkt=en-us&amp;it=G,VE,BX,L,LA&amp;shading=hill</code></li>
+<li>Bing_sat: <code>http://ecn.t3.tiles.virtualearth.net/tiles/a&#123;q&#125;.jpeg?g=0&amp;dir=dir_n</code></li>
+<li>cartdb_positron: <code>http://a.basemaps.cartocdn.com/light_all/&#123;z&#125;/&#123;x&#125;/&#123;y&#125;.png</code></li>
+<li>ESRI_national_geographic: <code>http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/&#123;z&#125;/&#123;y&#125;/&#123;x&#125;</code></li>
+<li>ESRI_sat: <code>https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/&#123;z&#125;/&#123;y&#125;/&#123;x&#125;</code></li>
+<li>ESRI_standard: <code>https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/&#123;z&#125;/&#123;y&#125;/&#123;x&#125;</code></li>
+<li>google_CN: <code>http://mt2.google.cn/vt/lyrs=m@177000000&amp;hl=zh-CN&amp;gl=cn&amp;src=app&amp;x=&#123;x&#125;&amp;y=&#123;y&#125;&amp;z=&#123;z&#125;</code></li>
+<li>google_road: <code>https://mt1.google.com/vt/lyrs=m&amp;x=&#123;x&#125;&amp;y=&#123;y&#125;&amp;z=&#123;z&#125;</code></li>
+<li>google_sat_us: <code>https://mt1.google.com/vt/lyrs=s@110&amp;x=&#123;x&#125;&amp;y=&#123;y&#125;&amp;z=&#123;z&#125;</code></li>
+<li>google_sat: <code>http://mt3.google.cn/vt/lyrs=s@110&amp;hl=zh-CN&amp;gl=cn&amp;src=app&amp;x=&#123;x&#125;&amp;y=&#123;y&#125;&amp;z=&#123;z&#125;</code></li>
+<li>landsat: <code>http://irs.gis-lab.info/?layers=landsat&amp;request=GetTile&amp;z=&#123;z&#125;&amp;x=&#123;x&#125;&amp;y=&#123;y&#125;</code></li>
+<li>OSM: <code>http://c.tile.openstreetmap.org/&#123;z&#125;/&#123;x&#125;/&#123;y&#125;.png</code></li>
+<li>google_terrain: <code>http://mt0.google.com/vt/lyrs=t@130,r@203000000&amp;hl=en&amp;x=&#123;x&#125;&amp;y=&#123;y&#125;&amp;z=&#123;z&#125;&amp;s=Ga</code></li>
+<li>高德地图: <code>http://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&amp;size=1&amp;scale=1&amp;style=8&amp;x=&#123;x&#125;&amp;y=&#123;y&#125;&amp;z=&#123;z&#125;</code></li>
+<li>高德卫星: <code>http://webst04.is.autonavi.com/appmaptile?style=6&amp;x=&#123;x&#125;&amp;y=&#123;y&#125;&amp;z=&#123;z&#125;</code></li>
+<li>腾讯地图: <code>http://rt1.map.gtimg.com/realtimerender?z=&#123;z&#125;&amp;x=&#123;x&#125;&amp;y=&#123;y&#125;&amp;type=vector&amp;style=0</code></li>
+<li><a target="_blank" rel="noopener" href="http://map.geoq.cn/">geoq</a>: <code>http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetWarm/MapServer/tile/&#123;z&#125;/&#123;y&#125;/&#123;x&#125;</code></li>
+</ol>
+<h2 id="谷歌地址配置说明"><a href="#谷歌地址配置说明" class="headerlink" title="谷歌地址配置说明"></a>谷歌地址配置说明</h2><p><a target="_blank" rel="noopener" href="http://mt0.google.com/vt/lyrs=m&hl=en&x=%7Bx%7D&y=%7By%7D&z=%7Bz%7D&s=Ga">http://mt0.google.com/vt/lyrs=m&amp;hl=en&amp;x={x}&amp;y={y}&amp;z={z}&amp;s=Ga</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">h = roads only</span><br><span class="line">m = standard roadmap</span><br><span class="line">p = terrain</span><br><span class="line">r = somehow altered roadmap</span><br><span class="line">s = satellite only</span><br><span class="line">t = terrain only</span><br><span class="line">y = hybrid</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/GIS/" rel="tag"># GIS</a>
+              <a href="/tags/TMS/" rel="tag"># TMS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/07/30/Mapbox-%E5%9C%B0%E5%9B%BE%E6%95%99%E7%A8%8B/" rel="prev" title="Mapbox 地图教程">
+                  <i class="fa fa-chevron-left"></i> Mapbox 地图教程
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/03/30/vim-cheat-sheet/" rel="next" title="Vim Cheat Sheet">
+                  Vim Cheat Sheet <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fas fa-users"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xiaoxi HU</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

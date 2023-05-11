@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"blog.ptlab.top","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="H5 性能优化意义对于一个 H5 的产品，功能无疑很重要，但是性能同样是用户体验中不可或缺的一环。原本 H5 的渲染性能就不及 native 的 app，如果不把性能优化做起来，将极大地影响用户使用产品的积极性。 用户感受当用户能够在 1-2 秒内打开 H5 页面，看到信息的展示，或者能够开始进行下一步的操作，用户会感觉速度还好，可以接受；而页面如果在 2-5 秒后才进入可用的状态，用户的耐心会逐">
+<meta property="og:type" content="article">
+<meta property="og:title" content="H5性能优化方案">
+<meta property="og:url" content="https://blog.ptlab.top/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/index.html">
+<meta property="og:site_name" content="胡晓曦的博客">
+<meta property="og:description" content="H5 性能优化意义对于一个 H5 的产品，功能无疑很重要，但是性能同样是用户体验中不可或缺的一环。原本 H5 的渲染性能就不及 native 的 app，如果不把性能优化做起来，将极大地影响用户使用产品的积极性。 用户感受当用户能够在 1-2 秒内打开 H5 页面，看到信息的展示，或者能够开始进行下一步的操作，用户会感觉速度还好，可以接受；而页面如果在 2-5 秒后才进入可用的状态，用户的耐心会逐">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.ptlab.top/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/97990a05-a1df-4079-8fa4-d40bec15769b.jpg">
+<meta property="og:image" content="https://blog.ptlab.top/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/5c6a89dd-69d3-4491-aabb-ad0d1d5e7d85.png">
+<meta property="og:image" content="https://blog.ptlab.top/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/64c3379b-45c3-45a3-9280-c8f9689fcc1f.png">
+<meta property="og:image" content="https://blog.ptlab.top/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/3e9446f5-e962-42c1-a471-4548f39e2d79.png">
+<meta property="og:image" content="https://blog.ptlab.top/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/60032c93-e06f-4615-8e30-13f4183ea9b6.png">
+<meta property="og:image" content="https://blog.ptlab.top/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/23717eca-d582-4907-b6ea-5da9761398c3.png">
+<meta property="og:image" content="https://blog.ptlab.top/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/3894498a-5c50-43cb-8466-a414e63980c0.png">
+<meta property="og:image" content="https://blog.ptlab.top/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/1e72c743-db5a-4659-b290-22a181f94096.png">
+<meta property="article:published_time" content="2019-07-25T05:14:29.000Z">
+<meta property="article:modified_time" content="2023-05-11T07:33:34.079Z">
+<meta property="article:author" content="Xiaoxi HU">
+<meta property="article:tag" content="前端开发">
+<meta property="article:tag" content="性能优化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.ptlab.top/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/97990a05-a1df-4079-8fa4-d40bec15769b.jpg">
+
+
+<link rel="canonical" href="https://blog.ptlab.top/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://blog.ptlab.top/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/","path":"2019/07/25/H5性能优化方案/","title":"H5性能优化方案"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>H5性能优化方案 | 胡晓曦的博客</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">胡晓曦的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">个人开发文档</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fas fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fas fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fas fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fas fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#H5-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%84%8F%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text">H5 性能优化意义</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8%E6%88%B7%E6%84%9F%E5%8F%97"><span class="nav-number">1.1.</span> <span class="nav-text">用户感受</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E7%A7%92%E9%92%9F%E6%B3%95%E5%88%99"><span class="nav-number">1.2.</span> <span class="nav-text">一秒钟法则</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88"><span class="nav-number">2.</span> <span class="nav-text">优化方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%84%E6%BA%90%E5%8A%A0%E8%BD%BD"><span class="nav-number">2.1.</span> <span class="nav-text">资源加载</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A6%96%E5%B1%8F%E5%8A%A0%E8%BD%BD"><span class="nav-number">2.1.1.</span> <span class="nav-text">首屏加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%89%E9%9C%80%E5%8A%A0%E8%BD%BD"><span class="nav-number">2.1.2.</span> <span class="nav-text">按需加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lazyload"><span class="nav-number">2.1.3.</span> <span class="nav-text">Lazyload</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BB%9A%E5%B1%8F%E5%8A%A0%E8%BD%BD"><span class="nav-number">2.1.4.</span> <span class="nav-text">滚屏加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Media-Query%EF%BC%88%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8A%A0%E8%BD%BD%EF%BC%89"><span class="nav-number">2.1.5.</span> <span class="nav-text">Media Query（响应式加载）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%96%B9%E8%B5%84%E6%BA%90%E5%BC%82%E6%AD%A5%E5%8A%A0%E8%BD%BD"><span class="nav-number">2.1.6.</span> <span class="nav-text">第三方资源异步加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Loading-%E8%BF%9B%E5%BA%A6%E6%9D%A1"><span class="nav-number">2.1.7.</span> <span class="nav-text">Loading 进度条</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%BF%E5%85%8D-30-x2F-40-x2F-50-%E7%9A%84-http-status"><span class="nav-number">2.1.8.</span> <span class="nav-text">避免 30*&#x2F;40*&#x2F;50*的 http status</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Favicon-ico"><span class="nav-number">2.1.9.</span> <span class="nav-text">Favicon.ico</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E7%89%87%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">2.2.</span> <span class="nav-text">图片的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%BC%E5%BC%8F%E9%80%89%E6%8B%A9"><span class="nav-number">2.2.1.</span> <span class="nav-text">格式选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%83%8F%E7%B4%A0%E6%8E%A7%E5%88%B6"><span class="nav-number">2.2.2.</span> <span class="nav-text">像素控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%8F%E5%9B%BE%E7%89%87%E5%90%88%E5%B9%B6"><span class="nav-number">2.2.3.</span> <span class="nav-text">小图片合并</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%BF%E5%85%8D-html-%E4%BB%A3%E7%A0%81%E4%B8%AD%E7%9A%84%E5%A4%A7%E5%B0%8F%E9%87%8D%E8%AE%BE"><span class="nav-number">2.2.4.</span> <span class="nav-text">避免 html 代码中的大小重设</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%BF%E5%85%8D-DataURL"><span class="nav-number">2.2.5.</span> <span class="nav-text">避免 DataURL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9B%BE%E7%89%87%E7%9A%84%E6%9B%BF%E4%BB%A3-css3-svg-iconfont"><span class="nav-number">2.2.6.</span> <span class="nav-text">使用图片的替代(css3, svg, iconfont)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%9F%E5%90%8D-x2F-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E9%83%A8%E7%BD%B2"><span class="nav-number">2.3.</span> <span class="nav-text">域名&#x2F;服务端部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Gzip"><span class="nav-number">2.3.1.</span> <span class="nav-text">Gzip</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B5%84%E6%BA%90%E7%BC%93%E5%AD%98%EF%BC%8C%E9%95%BF-cache"><span class="nav-number">2.3.2.</span> <span class="nav-text">资源缓存，长 cache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%9F%9F%E5%90%8D%E9%83%A8%E7%BD%B2-%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E5%9F%9F%E5%90%8D"><span class="nav-number">2.3.3.</span> <span class="nav-text">分域名部署(静态资源域名)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%8F%E5%B0%91-Cookie"><span class="nav-number">2.3.4.</span> <span class="nav-text">减少 Cookie</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CDN-%E5%8A%A0%E9%80%9F"><span class="nav-number">2.3.5.</span> <span class="nav-text">CDN 加速</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%B5%84%E6%BA%90"><span class="nav-number">2.4.</span> <span class="nav-text">代码资源</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Javascript-CSS-%E5%90%88%E5%B9%B6"><span class="nav-number">2.4.1.</span> <span class="nav-text">Javascript, CSS 合并</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%96%E8%81%94%E4%BD%BF%E7%94%A8-js-css"><span class="nav-number">2.4.2.</span> <span class="nav-text">外联使用 js, css</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9-html-js-css"><span class="nav-number">2.4.3.</span> <span class="nav-text">压缩 html, js, css</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B5%84%E6%BA%90%E7%9A%84%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B0"><span class="nav-number">2.4.4.</span> <span class="nav-text">资源的版本更新</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Css-%E4%BD%8D%E7%BD%AE"><span class="nav-number">2.4.5.</span> <span class="nav-text">Css 位置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Js-%E4%BD%8D%E7%BD%AE"><span class="nav-number">2.4.6.</span> <span class="nav-text">Js 位置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83"><span class="nav-number">2.5.</span> <span class="nav-text">代码规范</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%BF%E5%85%8D%E7%A9%BA-src"><span class="nav-number">2.5.1.</span> <span class="nav-text">避免空 src</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%BF%E5%85%8D-css-%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">2.5.2.</span> <span class="nav-text">避免 css 表达式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%BF%E5%85%8D%E7%A9%BA-css-%E8%A7%84%E5%88%99"><span class="nav-number">2.5.3.</span> <span class="nav-text">避免空 css 规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%BF%E5%85%8D%E7%9B%B4%E6%8E%A5%E8%AE%BE%E7%BD%AE%E5%85%83%E7%B4%A0-style"><span class="nav-number">2.5.4.</span> <span class="nav-text">避免直接设置元素 style</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.6.</span> <span class="nav-text">服务端接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E5%90%88%E5%B9%B6"><span class="nav-number">2.6.1.</span> <span class="nav-text">接口合并</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%8F%E5%B0%91%E6%8E%A5%E5%8F%A3%E6%95%B0%E6%8D%AE%E9%87%8F"><span class="nav-number">2.6.2.</span> <span class="nav-text">减少接口数据量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98"><span class="nav-number">2.6.3.</span> <span class="nav-text">缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E4%B8%80%E4%BA%9B%E5%BB%BA%E8%AE%AE"><span class="nav-number">2.7.</span> <span class="nav-text">其他一些建议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E5%BF%AB%E4%B8%80%E6%AD%A5"><span class="nav-number">2.8.</span> <span class="nav-text">更快一步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E9%A1%B5%E5%BA%94%E7%94%A8"><span class="nav-number">2.8.1.</span> <span class="nav-text">单页应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B5%84%E6%BA%90%E7%A6%BB%E7%BA%BF"><span class="nav-number">2.8.2.</span> <span class="nav-text">资源离线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96%E5%92%8C%E6%9B%B4%E6%96%B0%E6%9C%BA%E5%88%B6-%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86"><span class="nav-number">2.8.3.</span> <span class="nav-text">本地数据持久化和更新机制(版本管理)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%84%E5%8A%A0%E8%BD%BD"><span class="nav-number">2.8.4.</span> <span class="nav-text">预加载</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E6%96%B9%E6%A1%88"><span class="nav-number">3.</span> <span class="nav-text">测试方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7%E5%87%86%E5%A4%87"><span class="nav-number">3.1.</span> <span class="nav-text">工具准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Chrome"><span class="nav-number">3.1.1.</span> <span class="nav-text">Chrome</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Charles"><span class="nav-number">3.1.2.</span> <span class="nav-text">Charles</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E6%A0%87%E5%87%86"><span class="nav-number">3.2.</span> <span class="nav-text">测试标准</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%8F%E5%85%B8%E6%A1%88%E4%BE%8B"><span class="nav-number">3.3.</span> <span class="nav-text">经典案例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E7%89%87%E6%9C%AA%E4%BC%98%E5%8C%96"><span class="nav-number">3.3.1.</span> <span class="nav-text">图片未优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%89%E9%9C%80%E5%8A%A0%E8%BD%BD-1"><span class="nav-number">3.3.2.</span> <span class="nav-text">按需加载</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Xiaoxi HU"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Xiaoxi HU</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/huxiaoxi1992" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;huxiaoxi1992" rel="noopener me" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.ptlab.top/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Xiaoxi HU">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="胡晓曦的博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="H5性能优化方案 | 胡晓曦的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          H5性能优化方案
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-25 13:14:29" itemprop="dateCreated datePublished" datetime="2019-07-25T13:14:29+08:00">2019-07-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-05-11 15:33:34" itemprop="dateModified" datetime="2023-05-11T15:33:34+08:00">2023-05-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">前端开发</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="H5-性能优化意义"><a href="#H5-性能优化意义" class="headerlink" title="H5 性能优化意义"></a>H5 性能优化意义</h1><p>对于一个 H5 的产品，功能无疑很重要，但是性能同样是用户体验中不可或缺的一环。原本 H5 的渲染性能就不及 native 的 app，如果不把性能优化做起来，将极大地影响用户使用产品的积极性。</p>
+<h2 id="用户感受"><a href="#用户感受" class="headerlink" title="用户感受"></a>用户感受</h2><p>当用户能够在 1-2 秒内打开 H5 页面，看到信息的展示，或者能够开始进行下一步的操作，用户会感觉速度还好，可以接受；而页面如果在 2-5 秒后才进入可用的状态，用户的耐心会逐渐丧失；而如果一个界面超过 5 秒甚至更久才能显示出来，这对用户来说基本是无法忍受的，也许有一部分用户会退出重新进入，但更多的用户会直接放弃使用。</p>
+<span id="more"></span>
+
+<h2 id="一秒钟法则"><a href="#一秒钟法则" class="headerlink" title="一秒钟法则"></a>一秒钟法则</h2><p>移动互联网的架构、通讯机制，与有线网络有着巨大的差异，这也给 H5 的开发带来了很大的挑战。</p>
+<p><img src="/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/97990a05-a1df-4079-8fa4-d40bec15769b.jpg"></p>
+<p>这是一张手机端接入服务器的流程。</p>
+<p>首先，手机要通过无线网络协议，从基站获得无线链路分配，才能跟网络进行通讯。无线网络基站、基站控制器这方面，会给手机进行信号的分配，已完成手机连接和交互。获得无线链路后，会进行网络附着、加密、鉴权，核心网络会检查你是不是可以连接在这个网络上，是否开通套餐，是不是漫游等。核心网络有 SGSN 和 GGSN，在这一步完成无线网络协议和有线以太网的协议转换。再下一步，核心网络会给你进行 APN 选择、IP 分配、启动计费。再往下面，才是传统网络的步骤：DNS 查询、响应，建立 TCP 链接，HTTP GET，RTTP RESPONSE 200 OK，HTTP RESPONSE DATA，LAST HTTP RESPONSE DATA，开始 UI 展现。</p>
+<p>可见，通过运营商的网络上网，情况比较复杂，经过的节点太多；运营商的网络信号强度变化频繁，连接状态切换快；网络延迟高、丢包率高；网络建立连接的代价高，传输速度快慢不等（从 2G 到 4G，相差很大）。</p>
+<p>而我们优化的目标，就是所谓的一秒钟法则，即达成以下的标准：</p>
+<ul>
+<li>2g 网络：1 秒内完成 dns 查询、和后台服务器建立连接</li>
+<li>3g 网络：1 秒内完成首字显示（首字时间）</li>
+<li>wifi 网络：1 秒内完成首屏显示（首屏时间）</li>
+</ul>
+<h1 id="优化方案"><a href="#优化方案" class="headerlink" title="优化方案"></a>优化方案</h1><h2 id="资源加载"><a href="#资源加载" class="headerlink" title="资源加载"></a>资源加载</h2><h3 id="首屏加载"><a href="#首屏加载" class="headerlink" title="首屏加载"></a>首屏加载</h3><p>用户从点击按钮开始载入网页，在他的感知中，什么时候是“加载完成”？是首屏加载，即在可见的屏幕范围内，内容展现完全，loading 进度条消失。因此在 H5 性能优化中，一个很重要的目的就是尽可能提升这个“首屏加载”的时间，让它满足“一秒钟法则”。</p>
+<h3 id="按需加载"><a href="#按需加载" class="headerlink" title="按需加载"></a>按需加载</h3><p>首先要明确，按需加载虽然能提升首屏加载的速度，但是可能带来更多的界面重绘，影响渲染性能，因此要评估具体的业务场景再做决定。</p>
+<h3 id="Lazyload"><a href="#Lazyload" class="headerlink" title="Lazyload"></a>Lazyload</h3><p>Lazyload，即延迟加载，这并不是一个新的技术，在 PC 时代也是非常常用的一种性能优化手段。这个方案的原则是让屏幕外，或者不影响整体效果显示的图片、背景等资源，在界面就绪之后再进行网络加载。</p>
+<h3 id="滚屏加载"><a href="#滚屏加载" class="headerlink" title="滚屏加载"></a>滚屏加载</h3><p>滚屏加载是一种常见的无刷新动态加载数据的方案，通常用在列表形式数据展示中。一方面，数据不是通过翻页进行加载，这样就避免了再一次请求和渲染整个页面；另一方面，数据显示的数量是受限的，例如第一次只请求了 10 条数据，也就只需要渲染这 10 条数据，下拉滚屏的时候，再去获得下面 10 条数据。</p>
+<h3 id="Media-Query（响应式加载）"><a href="#Media-Query（响应式加载）" class="headerlink" title="Media Query（响应式加载）"></a>Media Query（响应式加载）</h3><p>响应式设计是现在网站设计的一个流行趋势，随着移动互联网的发展，这项技术也越来越受到重视。通过这项技术，我们能够方便地控制资源的加载与显示，例如说在分辨率不同的手机上，分别使用不同的 css，加载不同大小的图片资源。方案参考：<a target="_blank" rel="noopener" href="http://www.poluoluo.com/jzxy/201206/167034.html">http://www.poluoluo.com/jzxy/201206/167034.html</a></p>
+<h3 id="第三方资源异步加载"><a href="#第三方资源异步加载" class="headerlink" title="第三方资源异步加载"></a>第三方资源异步加载</h3><p>第三方资源有的时候不可控，比如说页面统计、地图显示、分享组件等，这些第三方资源使用的时候要慎重选择，充分考察它们对于性能的影响，使用异步加载的方式进行，防止第三方资源的使用影响到页面本身的功能。</p>
+<h3 id="Loading-进度条"><a href="#Loading-进度条" class="headerlink" title="Loading 进度条"></a>Loading 进度条</h3><p>在加载时间较长的时候，务必要让用户明确感知到加载完成的提示，通常是在加载过程中显示 Loading 的进度条，加载完成的时候隐藏它。从心理上，这会让用户有一种“期盼感”，而不至于太过枯燥。</p>
+<p>对于一些重量级的 H5 应用，例如游戏，开始前需要加载很多资源才能让后面的游戏过程更为流畅，一个带百分比进度显示的进度条就更加重要。</p>
+<h3 id="避免-30-x2F-40-x2F-50-的-http-status"><a href="#避免-30-x2F-40-x2F-50-的-http-status" class="headerlink" title="避免 30*&#x2F;40*&#x2F;50*的 http status"></a>避免 30*&#x2F;40*&#x2F;50*的 http status</h3><ul>
+<li>200 是一个正常的 response，我们在浏览器中打开一个网页（后面会讲如何针对移动端进行调试），还会看到 304，即命中浏览器缓存。这两种状态是正常的 http status。</li>
+<li>302、301 跳转是常见的跳转，尤其前一种，在我们进行鉴权的时候有时会用到，但这个做法要尽可能地优化，一个页面访问，最多只进行一次 302 跳转即可，切忌频繁地跳转。</li>
+<li>404、500，我们对自己开发的代码比较注意，一般不会发生，但是有的时候，加载第三方库，尤其是第三方库中有自己 load 组件的操作，这时，404 和 500 错误可能会在你不知不觉的时候发生。例如钉钉的第三方微应用中，就遇到过 dojo 的组件加载问题，加载的一些子组件失败了，但是又没有影响页面显示，这就很容易被忽略。后面也会再讲，如何去测试和发现这样的隐患。</li>
+</ul>
+<h3 id="Favicon-ico"><a href="#Favicon-ico" class="headerlink" title="Favicon.ico"></a>Favicon.ico</h3><p>如果我们没有设置图标 ico，则会加载默认的图标：域名目录下的 favicon.ico。很多开发者没有注意到这一点，就会导致这个请求 404 或者 500。</p>
+<p>通常，我们在应用内部打开网页，不会显示这个图标出来（除非放到浏览器中显示网页），我们需要保证这个图标存在，尽可能地小（一般 4KB 以下），并且设置一个较长的缓存过期时间。</p>
+<h2 id="图片的使用"><a href="#图片的使用" class="headerlink" title="图片的使用"></a>图片的使用</h2><h3 id="格式选择"><a href="#格式选择" class="headerlink" title="格式选择"></a>格式选择</h3><p>显示效果较好的图片格式中，有 webp、jpg 和 png24&#x2F;32 这几种常见的图片格式。一般来说，webp 的图片最小，但在 iOS 或者 android4.0 以下的系统中可能会有兼容性问题需要解决。</p>
+<ul>
+<li>Jpg 是我们最常使用的方案，大小适中，解码速度快，兼容性问题也基本不存在，是我们在 H5 的应用中使用起来性价比最高的方案。</li>
+<li>Png24 或 png32，一般来说，显示效果肯定会比 jpg 更好，但是实际上人眼很难感知出来，所以在 H5 应用中要避免这种格式的大图片。</li>
+</ul>
+<p><strong>对于少量的图片，推荐用智图或者 tinypng 等工具来帮助自己选择合适的大小、格式。</strong></p>
+<h3 id="像素控制"><a href="#像素控制" class="headerlink" title="像素控制"></a>像素控制</h3><p>在 H5 应用中，图片的像素要严格控制，一般来说不建议宽度超过 640px。</p>
+<h3 id="小图片合并"><a href="#小图片合并" class="headerlink" title="小图片合并"></a>小图片合并</h3><p>在 html 网页中，如果有多个小图片需要加载，不妨试试 CSS Sprites 方案，尤其是一些基本不变，大小差不多的操作类型图标。</p>
+<h3 id="避免-html-代码中的大小重设"><a href="#避免-html-代码中的大小重设" class="headerlink" title="避免 html 代码中的大小重设"></a>避免 html 代码中的大小重设</h3><p>在 html 或者 css 中，如果有类似 width: **px 这样的代码，就要注意看一看了，如果说图片显示的效果是宽度 100px，而下载的图片却是 200px 宽度，那这大小基本上就是所需要的 4 倍面积了，所以在 H5 应用中，使用图片的一个原则就是需要显示成多大，就下载多大的资源。</p>
+<h3 id="避免-DataURL"><a href="#避免-DataURL" class="headerlink" title="避免 DataURL"></a>避免 DataURL</h3><p>DataURL 是用 Base64 的方式，将图片变成一串文本编码放入代码的方式。这种方式有好处，因为它可以减少一次 http 交互的请求，对于一些体积特别小的图片，或者是动态生成的图片可以考虑使用。但在 H5 应用中，一般情况下，我们都是需要避免 DataURL 的，因为它的数据体积通常比二进制图片的格式大 1&#x2F;3，而且它不会被浏览器缓存，每次页面刷新都需要重新加载这部分数据。</p>
+<h3 id="使用图片的替代-css3-svg-iconfont"><a href="#使用图片的替代-css3-svg-iconfont" class="headerlink" title="使用图片的替代(css3, svg, iconfont)"></a>使用图片的替代(css3, svg, iconfont)</h3><p>CSS3 和 svg 可以更好地使用 GPU 进行渲染加速，而且会避免增加图片资源导致的 http 请求增加。例如一些 div 的圆角效果，就完全可以用用 css 来实现。</p>
+<p>Iconfont，可以认为是一种矢量类型的操作字体。如果页面中有较多的操作图标，可以考虑使用 iconfont 来替代图片资源。</p>
+<h2 id="域名-x2F-服务端部署"><a href="#域名-x2F-服务端部署" class="headerlink" title="域名&#x2F;服务端部署"></a>域名&#x2F;服务端部署</h2><h3 id="Gzip"><a href="#Gzip" class="headerlink" title="Gzip"></a>Gzip</h3><p>服务端要开启 Gzip 压缩。</p>
+<h3 id="资源缓存，长-cache"><a href="#资源缓存，长-cache" class="headerlink" title="资源缓存，长 cache"></a>资源缓存，长 cache</h3><p>合理设置资源的过期时间，尤其对一些静态的不需要改变的资源，将其缓存过期时间设置得长一些。</p>
+<h3 id="分域名部署-静态资源域名"><a href="#分域名部署-静态资源域名" class="headerlink" title="分域名部署(静态资源域名)"></a>分域名部署(静态资源域名)</h3><p>将动态资源和静态资源放置在不同的域名下，例如图片，放在自己特定的域名下。这样的好处是，静态资源请求时，不会带上动态域名中所设置的 cookie 头信息，从而减少 http 请求的大小。</p>
+<h3 id="减少-Cookie"><a href="#减少-Cookie" class="headerlink" title="减少 Cookie"></a>减少 Cookie</h3><p>尽量减少 Cookie 头信息的大小，因为这部分数据使用的是上行流量，上行带宽更小，所以传输速度更慢，因此要尽量精简其大小。</p>
+<h3 id="CDN-加速"><a href="#CDN-加速" class="headerlink" title="CDN 加速"></a>CDN 加速</h3><p>部署 CDN 服务器，或者使用第三方的 CDN 加速服务，优化不同地域接入网站的带宽速度。</p>
+<h2 id="代码资源"><a href="#代码资源" class="headerlink" title="代码资源"></a>代码资源</h2><h3 id="Javascript-CSS-合并"><a href="#Javascript-CSS-合并" class="headerlink" title="Javascript, CSS 合并"></a>Javascript, CSS 合并</h3><p>尽量将所有的 js 和 css 合并，减少资源请求的次数。</p>
+<h3 id="外联使用-js-css"><a href="#外联使用-js-css" class="headerlink" title="外联使用 js, css"></a>外联使用 js, css</h3><p>外联使用 js 和 css，这样可以有效地利用缓存，避免 html 页面刷新后重新加载这部分代码。</p>
+<h3 id="压缩-html-js-css"><a href="#压缩-html-js-css" class="headerlink" title="压缩 html, js, css"></a>压缩 html, js, css</h3><p>压缩代码，尤其是 js 和 css 资源，压缩后的大小可以降低至原来的 1&#x2F;3 以下，有效节约流量。</p>
+<h3 id="资源的版本更新"><a href="#资源的版本更新" class="headerlink" title="资源的版本更新"></a>资源的版本更新</h3><p>库 js、css 通常不会更新，但是我们的业务 js 和 css 可能会有更新，如果命中浏览器缓存，可能会让一些新的特性不能及时展现，甚至可能导致逻辑上的冲突。</p>
+<p>因此对于这些 js、css 的资源引入，最好用版本号或者更新时间来作为后缀，这样的话，后缀不变，命中缓存；后缀改变，浏览器自动更新最新的代码。</p>
+<h3 id="Css-位置"><a href="#Css-位置" class="headerlink" title="Css 位置"></a>Css 位置</h3><p>CSS 要放到 html 代码的开头的 head 标签结束前。如果网页是动态生成的，那么在 head 代码完成后可以强制输出（例如 php 的 flush()操作），这样的话，浏览器就会更快地解析出来 head 中的内容，开始下载 css 文件资源。</p>
+<h3 id="Js-位置"><a href="#Js-位置" class="headerlink" title="Js 位置"></a>Js 位置</h3><p>Js 放到前，这样的话，js 的加载不会影响初始页面的渲染。</p>
+<h2 id="代码规范"><a href="#代码规范" class="headerlink" title="代码规范"></a>代码规范</h2><h3 id="避免空-src"><a href="#避免空-src" class="headerlink" title="避免空 src"></a>避免空 src</h3><p>图片设置为空的 src 地址，在某些浏览器中可能会导致增加一个无效的 http 请求，因此要避免。</p>
+<h3 id="避免-css-表达式"><a href="#避免-css-表达式" class="headerlink" title="避免 css 表达式"></a>避免 css 表达式</h3><p>可能会让页面多次执行计算，造成卡顿等性能问题。</p>
+<h3 id="避免空-css-规则"><a href="#避免空-css-规则" class="headerlink" title="避免空 css 规则"></a>避免空 css 规则</h3><p>降低 css 渲染计算的成本</p>
+<h3 id="避免直接设置元素-style"><a href="#避免直接设置元素-style" class="headerlink" title="避免直接设置元素 style"></a>避免直接设置元素 style</h3><p>直接设置 style 属性，一方面在 html 代码中不利于缓存，另一方面也不利于样式的复用，因此要避免，通过指定 id 或者 class 的方式，在 css 代码块中进行样式调整。</p>
+<h2 id="服务端接口"><a href="#服务端接口" class="headerlink" title="服务端接口"></a>服务端接口</h2><h3 id="接口合并"><a href="#接口合并" class="headerlink" title="接口合并"></a>接口合并</h3><p>如果页面需要请求两部分以上的数据接口，建议将其合并，否则会增加一次 http 请求。</p>
+<h3 id="减少接口数据量"><a href="#减少接口数据量" class="headerlink" title="减少接口数据量"></a>减少接口数据量</h3><p>有的时候，服务端会把一些无关紧要的数据返回回来，尤其是类似于更新时间、状态等信息，如果在客户端不影响内容的逻辑展示，不妨在接口返回的数据中直接去掉这些内容。</p>
+<h3 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h3><p>缓存接口数据，在一些数据新旧敏感性不高的场景下很有作用，在非首次加载数据时候优先使用上次请求来的缓存数据，可以让页面更加快速地渲染出来，而不用等待一个新的 http 请求结束之后再渲染。这一点我们在后面还会再次提及。</p>
+<h2 id="其他一些建议"><a href="#其他一些建议" class="headerlink" title="其他一些建议"></a>其他一些建议</h2><ul>
+<li>合理使用 css<ul>
+<li>正确使用 Display 属性 Display 属性会影响页面的渲染，因此请合理使用</li>
+<li>display:inline 后不应该再使用 width、height、margin、padding 以及 float</li>
+<li>display:inline-block 后不应该再使用 float</li>
+<li>display:block 后不应该再使用 vertical-align</li>
+<li>display:table-*后不应该再使用 margin 或者 float</li>
+<li>不滥用 float</li>
+<li>不声明过多的 font-size</li>
+<li>值为 0 时不需要单位</li>
+<li>标准化各种浏览器前缀</li>
+<li>无前缀应放在最后</li>
+<li>CSS 动画只用 （-webkit- 无前缀）两种即可</li>
+<li>其它前缀为 -webkit- -moz- -ms- 无前缀 四种，（-o-Opera 浏览器改用 blink 内核，所以淘- 汰）</li>
+</ul>
+</li>
+<li>选择器<ul>
+<li>避免让选择符看起来像是正则表达式。高级选择器不容易读懂，执行耗时也长</li>
+<li>尽量使用 ID 选择器</li>
+<li>尽量使用 css3 动画</li>
+</ul>
+</li>
+<li>资源加载<ul>
+<li>使用 srcset</li>
+<li>首次加载不超过 1024KB（或者可以说是越小越好）</li>
+</ul>
+</li>
+<li>html 和 js<ul>
+<li>减少重绘和回流</li>
+<li>缓存 dom 选择和计算</li>
+<li>缓存列表.length</li>
+<li>尽量使用事件代理,避免批量绑定事件</li>
+<li>使用 touchstart，touchend 代替 click</li>
+<li>Html 使用 viewport</li>
+<li>减少 dom 节点</li>
+<li>合理使用 requestAnimationFrame 动画代替 setTimeOut</li>
+<li>适当使用 Canvas 动画</li>
+<li>TouchMove, Scroll 事件会导致多次渲染</li>
+</ul>
+</li>
+</ul>
+<h2 id="更快一步"><a href="#更快一步" class="headerlink" title="更快一步"></a>更快一步</h2><p>前面的很多建议与普通的 PC 端 web 网页的开发是一致的，但是在移动互联网应用下，仅仅做到这些，可能只有 60 分，那么怎样才能得到 80 分甚至更高？</p>
+<h3 id="单页应用"><a href="#单页应用" class="headerlink" title="单页应用"></a>单页应用</h3><p>钉钉的审批微应用，使用的就是单页架构。在这种架构下，基本不存在页面跳转的等待时间，只需要执行 js 逻辑触发界面变化，最多进行一次网络请求，获得服务端数据，其他资源均不需要再次请求。</p>
+<h3 id="资源离线"><a href="#资源离线" class="headerlink" title="资源离线"></a>资源离线</h3><p>再快的网络交互，毕竟也是跨越了数个网络节点，因此一张图片、一个 js，优化到了极致，也照样可能需要几百毫秒的时间来获得。因此想要打破这个极限，就要使用资源离线的策略。</p>
+<p>在钉钉的微应用中，就使用了这样的一个“离线包”策略。一些固定的图片、js 库等，被打包放入 app 中（或根据需要，在 app 启动的时候进行下载更新）。</p>
+<p>微应用中，网页代码里面加载网络资源的需求，就变成了直接加载本地文件，速度自然得到再一次巨大的提升。</p>
+<h3 id="本地数据持久化和更新机制-版本管理"><a href="#本地数据持久化和更新机制-版本管理" class="headerlink" title="本地数据持久化和更新机制(版本管理)"></a>本地数据持久化和更新机制(版本管理)</h3><p>对于一些时效性没有那么高的数据，可以考虑将接口数据缓存。那么页面的渲染将变成这样的流程：</p>
+<p><img src="/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/5c6a89dd-69d3-4491-aabb-ad0d1d5e7d85.png"></p>
+<p>而非首次进入界面，流程如下：</p>
+<p><img src="/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/64c3379b-45c3-45a3-9280-c8f9689fcc1f.png"></p>
+<p>可以看出，在非首次进入界面的时候，页面不需要等待网络数据返回，就可以进行界面渲染，渲染的初始数据来自于本地的缓存，页面可以“秒开”。而当服务端的数据返回之后，本地的渲染会再次更新，缓存也被更新。</p>
+<p>采用这样的方案有利有弊，好处显而易见，首屏加载的速度简直太快了——静态资源来自本地，数据接口来自本地，这在 2G、3G 或者其他网络速度较慢的时候，也可以让用户在极短的时间内就看到内容。但是这种方案也并非万能。</p>
+<ol>
+<li>首次加载不可避免，还是会请求网络。</li>
+<li>服务端有更新的时候，客户端不能够快速感知，页面可能还停留在一个“旧的版本”上，尤其是网络速度较慢时，可能还是需要经过好几秒，页面才会更新至最新版本。因此如果应用对数据的新旧很敏感的话，这种方案就不适合</li>
+<li>数据更新后，需要重新渲染界面，界面刷新的性能消耗比正常情况更多，而且增加了程序的复杂度，容易出错。</li>
+</ol>
+<h3 id="预加载"><a href="#预加载" class="headerlink" title="预加载"></a>预加载</h3><p>有时，我们能够通过用户的行为统计，预判出用户下一步可能进行的操作。假设，我们统计出来针对某个微应用，用户首页渲染完成之后，大部分会点击列表中的第一个项目查看详情。那么在首页渲染完成之后，我们就可以先预先加载第一个项目的部分内容，那么针对这部分用户，他们实际点击之后，立即就能看到新的页面中的内容。</p>
+<p>当然，这个方式也并不是在所有场景下都使用。一方面，需要做好充分的用户调研，掌握用户的使用习惯；另一方面，对于小部分用户而言，预加载所带来的就是不必要的流量消耗。</p>
+<h1 id="测试方案"><a href="#测试方案" class="headerlink" title="测试方案"></a>测试方案</h1><h2 id="工具准备"><a href="#工具准备" class="headerlink" title="工具准备"></a>工具准备</h2><h3 id="Chrome"><a href="#Chrome" class="headerlink" title="Chrome"></a>Chrome</h3><p>在功能测试中，我们通常可以用 chrome 来测试不同的分辨率下，或是不同的设备上，网页的展现情况。在我们做性能优化的时候，也可以用这种方式来进行调试，方便地观察在特定设备上，静态资源是否按照我们想象的那样去加载了。</p>
+<p><img src="/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/3e9446f5-e962-42c1-a471-4548f39e2d79.png"></p>
+<p>例如，我们想看下百度首页在某个设备下的表现。通过 F12 进入控制台，点击图中的短箭头标示出来的那个设备图标，然后就可以在 Device 和 Network 中选择不同的设备和网络状况。</p>
+<p><img src="/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/60032c93-e06f-4615-8e30-13f4183ea9b6.png"></p>
+<p>例如 iphone5 下，这个地图的图标，明显就可以看到是用 iconfont 来实现的效果。</p>
+<p>当然，这个功能也仅仅是一种模拟，通过控制屏幕分辨率、UserAgent 等来模拟设备请求，在实际的设备上，又该怎么查看呢？</p>
+<p>还是 Chrome，我们在地址栏中输入 chrome:&#x2F;&#x2F;inspect（注意：Android 版本需要是 4.4+，并且应用中的 WebView 必须进行相应的调试声明配置）</p>
+<p><img src="/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/23717eca-d582-4907-b6ea-5da9761398c3.png"></p>
+<p>在这里点击 inspect，则可进入我们熟悉的 F12 控制台界面，只不过 debug 的对象变成了我们在手机应用中的网页。</p>
+<p><img src="/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/3894498a-5c50-43cb-8466-a414e63980c0.png"></p>
+<p>输入 performance.timing.domComplete - performance.timing.navigationStart，就可以打印出网页加载的时间，domComplete 表示所有的处理都已完成并且所有的附属资源都已经下载完毕。navigationStart 表示开始加载新页面。两者相减，就代表这个网页完成渲染所需要的时间了。</p>
+<p>同样地，我们可以在 Elements tab 中，debug 网页，查看各个资源的使用，在 Network 中，看看加载了哪些资源，是否都做过了压缩。</p>
+<p>然而，这种方式，还是有一定缺陷。1. 如果打开网页经过了跳转，那么我们只能在这里看到最后一个 url 页面的加载情况。2. 第一次打开页面的时候，在 Network 中，默认是不显示请求的详情的，当我们选择了 preserve log upon navigation 之后才会捕获，因此首次进入页面的加载情况，我们就很难获得了。</p>
+<p>那么有没有一种方法，让我们能够更方便地去查看首次访问时，各种资源的加载使用情况呢？</p>
+<h3 id="Charles"><a href="#Charles" class="headerlink" title="Charles"></a>Charles</h3><p>Charles Proxy，可以说是 H5 测试的一个神器。它的作用是在 PC 端开启一个代理服务器，手机连到这个代理服务器上之后，所有的 http 请求就都可以在这里看得清清楚楚。经过配置证书选项，https 的请求也可以正常查看。</p>
+<p>从图中，我们明显可以看到，有一些 404 的异常请求，这些都将对我们 H5 应用的性能造成影响。如果我们发现有一些资源的 Duration 比较大，那这些可能是服务端响应太慢，自然也可以作为我们优化的依据。</p>
+<h2 id="测试标准"><a href="#测试标准" class="headerlink" title="测试标准"></a>测试标准</h2><p>在钉钉的测试中，形成了一套标准。</p>
+<p>| 指标项 | 遵循的原则                 | 优先级 | 检查项                                                                 | 说明                                                      |<br>| :—– | :————————- | :—– | :——————————————————————— | :——————————————————– | —————————— |<br>| 内存   | 内存无泄漏                 | P0     | 主功能页面反复打开，功能的重复调用，内存无泄漏                         | 可以使用 sysdump,也可以用我们开发的 perfeasy 工具进行观察 |<br>|        |                            | P1     | 主功能页面，持续操作，退出后，内存占用不超过总内存的 5%                | perfeasy                                                  |<br>| CPU    | 减少无端的 CPU 使用        | P1     | 灭屏，静置 2 分钟，在 5 分钟内 CPU 使用平均 1%                         | adb 连接后, 使用 top 命令                                 |<br>|        |                            |        | 主干功能正常操作 CPU 占用不超过 60%, 持续 5 秒                         | perfeasy                                                  |<br>| 电量   | 避免无端电量消耗           | P0     | 灭屏状态下，无线程持续运行                                             | 一般来说, 静置 cpu 正常, 这一项就没有问题                 |<br>|        |                            |        | 灭屏，window.setTimeout()方法停止                                      | 一般来说, 静置 cpu 正常, 这一项就没有问题同上             |<br>|        |                            |        | 灭屏，window.setInterval()方法停止                                     | 同上                                                      |<br>|        |                            |        | ajax 超时时间设置为 5000ms 以内                                        | 结合代码                                                  |<br>|        |                            |        | ajax 无 retry 逻辑                                                     | 结合代码                                                  |<br>| 资源   | 资源的正确使用             | P0     | 是否存在资源的重复拉取                                                 | charles                                                   |<br>|        |                            | P1     | H5 页面首屏总大小不超过 200K                                           | charles, chrome                                           |<br>|        |                            | P1     | 抓包检查(js&#x2F;css&#x2F;html)代码去除了空格&#x2F;注释，JS 文件变量名变成 a&#x2F;b 等代替 | charles, chrome                                           |<br>|        |                            | P1     | H5 引用的单张图片小于 60K                                              | charles, chrome                                           | 如果影响了显示质量, 可酌情调整 |<br>| 流畅度 | 确保给到用户流畅的展示体验 | P1     | 流畅的实时动画展示，avgFPS&gt;&#x3D;45                                         | perfeasy                                                  |<br>| 时延   | 确保给到用户流畅的切换体验 | P0     | wifi 网络下，首次进入页面 onload 时间&lt;1000ms                           | Chrome                                                    |<br>| 时延   | 确保给到用户流畅的切换体验 | P0     | wifi 网络下，首次进入页面 onload 时间&lt;1000ms                           | Chrome                                                    |<br>|        |                            |        | wifi 网络下，非首次进入页面 onload 时间&lt;500ms                          | Chrome                                                    |<br>|        |                            |        | 3G 正常网络， 首次进入页面 onload 时间&lt;2000ms                          | chrome, 树莓派模拟 3G                                     |<br>|        |                            |        | 3G 正常网络， 非首次进入页面 onload 时间&lt;1000ms                        | chrome, 树莓派模拟 3G                                     |</p>
+<h2 id="经典案例"><a href="#经典案例" class="headerlink" title="经典案例"></a>经典案例</h2><h3 id="图片未优化"><a href="#图片未优化" class="headerlink" title="图片未优化"></a>图片未优化</h3><p>通过 charles 可以方便地进行测试。从请求监控的情况看，有一张图片超过了 60KB，宽度 640px，但是在应用中，实际显示的是一张小缩略图，是通过代码控制让它显示成小图的，因此修改方案很简单，将所有头像的图片均改为获取 120px 宽度的即可。<br><img src="/2019/07/25/H5%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/1e72c743-db5a-4659-b290-22a181f94096.png"></p>
+<h3 id="按需加载-1"><a href="#按需加载-1" class="headerlink" title="按需加载"></a>按需加载</h3><ul>
+<li>钉钉的教学页面<ul>
+<li>多个 slide 页面, 每个页面有 2-3 个图片, 其中有一个是大图显示</li>
+<li>图片是客户提供的, 最大的图片大约是 300KB 以上</li>
+<li>第一次进入页面后, 所有 slide 的图片均进行加载</li>
+<li>3G 网络下, loading 的图标大约持续 6000ms 后才会消失</li>
+</ul>
+</li>
+<li>优化方案<ul>
+<li>尽可能优化图片, 但是压缩后发现噪点明显增加, 影响了显示效果</li>
+<li>修改加载方案, 第一次进入后, 只加载本页的图片</li>
+<li>loading 时间降低至 1 秒左右</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/" rel="tag"># 前端开发</a>
+              <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag"># 性能优化</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/07/25/Linux-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" rel="prev" title="Linux 常用命令">
+                  <i class="fa fa-chevron-left"></i> Linux 常用命令
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/07/30/Mapbox-%E5%9C%B0%E5%9B%BE%E6%95%99%E7%A8%8B/" rel="next" title="Mapbox 地图教程">
+                  Mapbox 地图教程 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fas fa-users"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Xiaoxi HU</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
